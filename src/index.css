@@ -1,0 +1,142 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    scroll-behavior: smooth;
+  }
+  
+  body {
+    @apply bg-neutral-50 text-neutral-800;
+  }
+  
+  h1, h2, h3, h4, h5, h6 {
+    @apply font-inter font-semibold leading-tight;
+  }
+  
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl;
+  }
+  
+  h2 {
+    @apply text-3xl md:text-4xl;
+  }
+  
+  h3 {
+    @apply text-2xl md:text-3xl;
+  }
+  
+  h4 {
+    @apply text-xl md:text-2xl;
+  }
+  
+  p {
+    @apply leading-relaxed;
+  }
+  
+  a {
+    @apply text-dental-600 hover:text-dental-700 transition-colors duration-200;
+  }
+}
+
+@layer components {
+  .container-custom {
+    @apply container mx-auto px-4 sm:px-6 lg:px-8 max-w-7xl;
+  }
+  
+  .btn {
+    @apply inline-flex items-center justify-center rounded-xl px-5 py-2.5 font-medium transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2;
+  }
+  
+  .btn-primary {
+    @apply btn bg-dental-600 text-white hover:bg-dental-700 focus:ring-dental-500;
+  }
+  
+  .btn-secondary {
+    @apply btn bg-white text-dental-700 border border-dental-200 hover:bg-dental-50 focus:ring-dental-500;
+  }
+  
+  .btn-outline {
+    @apply btn bg-transparent text-dental-600 border border-dental-600 hover:bg-dental-50 focus:ring-dental-500;
+  }
+  
+  .card {
+    @apply bg-white rounded-2xl overflow-hidden transition-all duration-300;
+  }
+  
+  .card-hover {
+    @apply hover:shadow-lg hover:-translate-y-1;
+  }
+  
+  .glass {
+    @apply bg-white/70 backdrop-blur-glass shadow-glass rounded-2xl border border-white/20;
+  }
+  
+  .section-padding {
+    @apply py-12 sm:py-16 md:py-20 lg:py-24;
+  }
+  
+  .scrollbar-hide::-webkit-scrollbar {
+    @apply hidden;
+  }
+  
+  .scrollbar-hide {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+  }
+}
+
+/* Animation classes */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity 0.6s ease-out, transform 0.6s ease-out;
+}
+
+.animate-on-scroll.is-visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* Hover effects */
+.hover-lift {
+  transition: transform 0.2s ease-in-out;
+}
+
+.hover-lift:hover {
+  transform: translateY(-5px);
+}
+
+/* Parallax elements */
+.parallax {
+  transition: transform 0.1s ease-out;
+}
+
+/* Minimal horizontal scrollbar for navigation bar */
+.navbar-scroll::-webkit-scrollbar {
+  height: 2px;
+  background: transparent;
+}
+
+.navbar-scroll::-webkit-scrollbar-track {
+  background: transparent;
+  border-radius: 9999px;
+}
+
+.navbar-scroll::-webkit-scrollbar-thumb {
+  background-color: #0284C7; /* dental-600 */
+  border-radius: 9999px;
+}
+
+.navbar-scroll::-webkit-scrollbar-button {
+  display: none;
+  width: 0;
+  height: 0;
+}
+
+/* Firefox */
+.navbar-scroll {
+  scrollbar-width: thin;
+  scrollbar-color: #0284C7 transparent;
+}
