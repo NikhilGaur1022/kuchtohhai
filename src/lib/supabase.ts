@@ -50,7 +50,7 @@ export interface Article {
   }
 }
 
-export interface Reference {
+interface Reference {
   authors: string[] | string
   title: string
   journal?: string
@@ -61,7 +61,7 @@ export interface Reference {
   doi?: string
 }
 
-export interface Profile {
+interface Profile {
   id: string
   full_name?: string
   email?: string
@@ -78,7 +78,7 @@ export interface Profile {
   updated_at: string
 }
 
-export interface Database {
+interface Database {
   public: {
     Tables: {
       saved_articles: {
@@ -283,13 +283,13 @@ export interface Database {
   };
 }
 // Article submission type
-export type ArticleSubmission = Omit<Article, 'id' | 'created_at' | 'is_approved'>;
-export const getCurrentUser = async () => {
+type ArticleSubmission = Omit<Article, 'id' | 'created_at' | 'is_approved'>;
+const getCurrentUser = async () => {
   const { data: { user } } = await supabase.auth.getUser()
   return user
 }
 
-export const getUserProfile = async (userId: string) => {
+const getUserProfile = async (userId: string) => {
   const { data, error } = await supabase
     .from('profiles')
     .select('*')
@@ -300,9 +300,8 @@ export const getUserProfile = async (userId: string) => {
   return data
 }
 
-export const signOut = async () => {
+const signOut = async () => {
   const { error } = await supabase.auth.signOut()
   if (error) throw error
 }
-
-export type { Professor, ProfessorStats, Course, ProfessorAchievement, ProfessorWithStats, ProfessorCardData } from '../types/professor';
+;
