@@ -66,7 +66,6 @@ function App() {
           <Route path="articles" element={<ArticlesPage />} />
           <Route path="articles/:id" element={<ArticleDetailPage />} />
           <Route path="events" element={<EventsPage />} />
-          <Route path="business-listings" element={<BusinessListingsPage />} />
           <Route path="products" element={<ProductsPage />} />
           <Route path="professors" element={<ProfessorsPage />} />
           <Route path="professors/:id/articles" element={<ProfessorArticlesPage />} />
