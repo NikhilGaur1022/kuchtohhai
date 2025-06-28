@@ -133,8 +133,13 @@ const Layout = () => {
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'Articles', href: '/articles' },
+  { name: 'Journals', href: '/journals' },
+  { name: 'Forum', href: '/forum' },
   { name: 'Events', href: '/events' },
   { name: 'Jobs', href: '/jobs' },
+  { name: 'Business', href: '/business-listings' },
+  { name: 'Products', href: '/products' },
+  { name: 'Professors', href: '/professors' },
   { name: 'About', href: '/about' },
 ];
 
@@ -153,12 +158,12 @@ const navLinks = [
             </Link>
 
             {/* Desktop Navigation */}
-            <div className="hidden lg:flex items-center space-x-8">
+            <div className="hidden lg:flex items-center space-x-6">
               {navLinks.map((link) => (
                 <Link
                   key={link.name}
                   to={link.href}
-                  className="text-neutral-700 hover:text-dental-600 font-medium transition-colors"
+                  className="text-neutral-700 hover:text-dental-600 font-medium transition-colors text-sm"
                 >
                   {link.name}
                 </Link>
