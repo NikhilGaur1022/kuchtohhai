@@ -9,7 +9,7 @@ import EventsPage from './pages/EventsPage';
 import EventDetailPage from './pages/EventDetailPage';
 import CreateEventPage from './pages/CreateEventPage';
 import VerificationApplicationPage from './pages/VerificationApplicationPage';
-import BusinessListingsPage from './pages/BusinessListingsPage';
+
 import ProductsPage from './pages/ProductsPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -81,7 +81,7 @@ function App() {
           <Route path="events/:id" element={<EventDetailPage />} />
           <Route path="events/create" element={<PrivateRoute><CreateEventPage /></PrivateRoute>} />
           <Route path="verification/apply" element={<PrivateRoute><VerificationApplicationPage /></PrivateRoute>} />
-          <Route path="business-listings" element={<BusinessListingsPage />} />
+
           <Route path="products" element={<ProductsPage />} />
           <Route path="professors" element={<ProfessorsPage />} />
           <Route path="professors/:id/articles" element={<ProfessorArticlesPage />} />
