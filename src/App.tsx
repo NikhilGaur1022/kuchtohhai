@@ -66,10 +66,6 @@ function App() {
           <Route path="articles" element={<ArticlesPage />} />
           <Route path="articles/:id" element={<ArticleDetailPage />} />
           <Route path="events" element={<EventsPage />} />
-          <Route path="products" element={<ProductsPage />} />
-          <Route path="professors" element={<ProfessorsPage />} />
-          <Route path="professors/:id/articles" element={<ProfessorArticlesPage />} />
-          <Route path="professors/:id" element={<ProfessorDetailPage />} />
           <Route path="about" element={<AboutPage />} />
           <Route path="submit" element={<PrivateRoute><SubmissionPage /></PrivateRoute>} />
           <Route path="dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
