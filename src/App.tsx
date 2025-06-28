@@ -18,7 +18,7 @@ import ScrollToTop from './components/common/ScrollToTop';
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute from './components/common/AdminRoute';
 
-import MyArticlesPage from './pages/MyArticlesPage';
+
 import ProfessorsPage from './pages/ProfessorsPage';
 import ProfessorDetailPage from './pages/ProfessorDetailPage';
 import ProfessorArticlesPage from './pages/ProfessorArticlesPage';
