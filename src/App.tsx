@@ -20,7 +20,7 @@ import AdminVerificationPage from './pages/dashboard/AdminVerificationPage';
 
 import NotFoundPage from './pages/NotFoundPage';
 import ScrollToTop from './components/common/ScrollToTop';
-import AboutPage from './pages/AboutPage';
+
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute from './components/common/AdminRoute';
 import NotificationsPage from './pages/NotificationsPage';
@@ -86,7 +86,7 @@ function App() {
           <Route path="professors" element={<ProfessorsPage />} />
           <Route path="professors/:id/articles" element={<ProfessorArticlesPage />} />
           <Route path="professors/:id" element={<ProfessorDetailPage />} />
-          <Route path="about" element={<AboutPage />} />
+
 
           <Route path="dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
           <Route path="profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
