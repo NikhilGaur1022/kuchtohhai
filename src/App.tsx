@@ -4,8 +4,6 @@ import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import ArticlesPage from './pages/ArticlesPage';
 import ArticleDetailPage from './pages/ArticleDetailPage'; // New import
-import JournalsPage from './pages/JournalsPage';
-import ForumPage from './pages/ForumPage';
 import ThreadDetailPage from './pages/ThreadDetailPage';
 import EventsPage from './pages/EventsPage';
 import BusinessListingsPage from './pages/BusinessListingsPage';
