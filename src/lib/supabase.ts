@@ -74,8 +74,70 @@ interface Profile {
   clinic_name?: string
   avatar_url?: string
   role: 'user' | 'admin'
+  is_verified?: boolean
+  verification_status?: 'unverified' | 'pending' | 'verified' | 'rejected'
+  verification_applied_at?: string
   created_at: string
   updated_at: string
+}
+
+interface Event {
+  id: number
+  title: string
+  description?: string
+  date: string
+  time?: string
+  location?: string
+  image_url?: string
+  type: 'conference' | 'webinar' | 'workshop' | 'seminar' | 'networking'
+  is_virtual: boolean
+  max_attendees?: number
+  registration_deadline?: string
+  price: number
+  organizer_id: string
+  status: 'upcoming' | 'ongoing' | 'completed' | 'cancelled'
+  created_at: string
+  updated_at: string
+  profiles?: {
+    full_name?: string
+    is_verified?: boolean
+  }
+}
+
+interface EventRegistration {
+  id: number
+  event_id: number
+  user_id: string
+  registration_date: string
+  status: 'registered' | 'attended' | 'cancelled'
+  notes?: string
+  created_at: string
+}
+
+interface VerificationApplication {
+  id: number
+  user_id: string
+  business_name: string
+  business_type: string
+  business_address: string
+  business_phone: string
+  business_email: string
+  business_license?: string
+  identity_document?: string
+  experience_description?: string
+  website_url?: string
+  social_media_links?: any
+  additional_info?: string
+  status: 'pending' | 'approved' | 'rejected'
+  admin_notes?: string
+  reviewed_by?: string
+  reviewed_at?: string
+  created_at: string
+  updated_at: string
+  profiles?: {
+    full_name?: string
+    email?: string
+  }
 }
 
 interface Database {
@@ -101,6 +163,21 @@ interface Database {
         Row: Profile
         Insert: Omit<Profile, 'created_at' | 'updated_at'>
         Update: Partial<Omit<Profile, 'id' | 'created_at' | 'updated_at'>>
+      }
+      events: {
+        Row: Event
+        Insert: Omit<Event, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<Event, 'id' | 'created_at' | 'updated_at'>>
+      }
+      event_registrations: {
+        Row: EventRegistration
+        Insert: Omit<EventRegistration, 'id' | 'registration_date' | 'created_at'>
+        Update: Partial<Omit<EventRegistration, 'id' | 'created_at'>>
+      }
+      verification_applications: {
+        Row: VerificationApplication
+        Insert: Omit<VerificationApplication, 'id' | 'created_at' | 'updated_at'>
+        Update: Partial<Omit<VerificationApplication, 'id' | 'created_at' | 'updated_at'>>
       }
       courses: {
         Row: {
@@ -244,7 +321,7 @@ interface Database {
         Row: {
           id: number
           user_id: string
-          type: 'article_approved' | 'article_rejected' | 'article_deleted' | 'general'
+          type: 'article_approved' | 'article_rejected' | 'article_deleted' | 'application_approved' | 'application_rejected' | 'general'
           message: string
           reason?: string
           read: boolean
@@ -253,7 +330,7 @@ interface Database {
         }
         Insert: {
           user_id: string
-          type: 'article_approved' | 'article_rejected' | 'article_deleted' | 'general'
+          type: 'article_approved' | 'article_rejected' | 'article_deleted' | 'application_approved' | 'application_rejected' | 'general'
           message: string
           reason?: string
           read?: boolean
@@ -304,4 +381,3 @@ const signOut = async () => {
   const { error } = await supabase.auth.signOut()
   if (error) throw error
 }
-;
