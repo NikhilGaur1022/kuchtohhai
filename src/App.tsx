@@ -66,7 +66,6 @@ function App() {
           <Route path="articles" element={<ArticlesPage />} />
           <Route path="articles/:id" element={<ArticleDetailPage />} />
           <Route path="events" element={<EventsPage />} />
-          <Route path="about" element={<AboutPage />} />
           <Route path="submit" element={<PrivateRoute><SubmissionPage /></PrivateRoute>} />
           <Route path="dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
           <Route path="profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
