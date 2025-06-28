@@ -4,7 +4,7 @@ import {
   BookOpen, Clock, Edit, Bell, User, Heart, MessageSquare, 
   Calendar, Award, FileText, Settings, LogOut, Star, 
   Bookmark, BarChart2, Users, TrendingUp, ChevronRight,
-  ShieldCheck, ThumbsUp, CheckCircle, Plus
+  ShieldCheck, ThumbsUp, CheckCircle, Plus, Briefcase, MapPin, Video
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import PageContainer from "../../components/common/PageContainer";
@@ -60,6 +60,27 @@ interface Event {
   is_virtual: boolean;
 }
 
+interface JobPosting {
+  id: number;
+  title: string;
+  company_name: string;
+  location: string;
+  job_type: string;
+  created_at: string;
+}
+
+interface JobApplication {
+  id: number;
+  status: string;
+  applied_at: string;
+  job_postings: {
+    id: number;
+    title: string;
+    company_name: string;
+    location: string;
+  };
+}
+
 const DashboardPage = () => {
   const { user, logout, isAdmin } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
@@ -67,7 +88,7 @@ const DashboardPage = () => {
   const [articlesAuthored, setArticlesAuthored] = useState<number | null>(null);
   const [commentsCount, setCommentsCount] = useState<number | null>(null);
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
-  const [activeSection, setActiveSection] = useState<'dashboard' | 'saved' | 'events' | 'discussions' | 'achievements' | 'settings'>('dashboard');
+  const [activeSection, setActiveSection] = useState<'dashboard' | 'saved' | 'events' | 'discussions' | 'achievements' | 'settings' | 'job-listings' | 'job-applications'>('dashboard');
   
   // Saved Items state
   const [savedLoading, setSavedLoading] = useState(false);
@@ -84,6 +105,16 @@ const DashboardPage = () => {
   const [eventsLoading, setEventsLoading] = useState(false);
   const [myEvents, setMyEvents] = useState<Event[]>([]);
   const [eventsError, setEventsError] = useState<string | null>(null);
+
+  // Job Listings state
+  const [jobListingsLoading, setJobListingsLoading] = useState(false);
+  const [myJobListings, setMyJobListings] = useState<JobPosting[]>([]);
+  const [jobListingsError, setJobListingsError] = useState<string | null>(null);
+
+  // Job Applications state
+  const [jobApplicationsLoading, setJobApplicationsLoading] = useState(false);
+  const [myJobApplications, setMyJobApplications] = useState<JobApplication[]>([]);
+  const [jobApplicationsError, setJobApplicationsError] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = 'Dashboard | DentalReach';
@@ -277,7 +308,6 @@ const DashboardPage = () => {
           title,
           date,
           location,
-          
           type,
           is_virtual
         )
@@ -296,6 +326,60 @@ const DashboardPage = () => {
           setMyEvents(events);
         }
         setEventsLoading(false);
+      });
+  }, [activeSection, user]);
+
+  // Fetch job listings when section is selected
+  useEffect(() => {
+    if (activeSection !== 'job-listings' || !user) return;
+    setJobListingsLoading(true);
+    setJobListingsError(null);
+    
+    supabase
+      .from('job_postings')
+      .select('id, title, company_name, location, job_type, created_at')
+      .eq('posted_by', user.id)
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          setJobListingsError('Failed to load your job listings.');
+          setMyJobListings([]);
+        } else {
+          setMyJobListings((data || []) as JobPosting[]);
+        }
+        setJobListingsLoading(false);
+      });
+  }, [activeSection, user]);
+
+  // Fetch job applications when section is selected
+  useEffect(() => {
+    if (activeSection !== 'job-applications' || !user) return;
+    setJobApplicationsLoading(true);
+    setJobApplicationsError(null);
+    
+    supabase
+      .from('job_applications')
+      .select(`
+        id,
+        status,
+        applied_at,
+        job_postings (
+          id,
+          title,
+          company_name,
+          location
+        )
+      `)
+      .eq('applicant_id', user.id)
+      .order('applied_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          setJobApplicationsError('Failed to load your job applications.');
+          setMyJobApplications([]);
+        } else {
+          setMyJobApplications((data || []) as JobApplication[]);
+        }
+        setJobApplicationsLoading(false);
       });
   }, [activeSection, user]);
 
@@ -443,6 +527,20 @@ const DashboardPage = () => {
                       My Discussions
                     </button>
                   </li>
+                  {profile.is_verified && (
+                    <li>
+                      <button type="button" onClick={() => setActiveSection('job-listings')} className={`flex items-center px-4 py-3 rounded-xl font-medium w-full text-left ${activeSection === 'job-listings' ? 'bg-dental-50 text-dental-700' : 'text-neutral-700 hover:bg-neutral-50'}`}>
+                        <Briefcase className="h-5 w-5 mr-3" />
+                        Job Listings
+                      </button>
+                    </li>
+                  )}
+                  <li>
+                    <button type="button" onClick={() => setActiveSection('job-applications')} className={`flex items-center px-4 py-3 rounded-xl font-medium w-full text-left ${activeSection === 'job-applications' ? 'bg-dental-50 text-dental-700' : 'text-neutral-700 hover:bg-neutral-50'}`}>
+                      <FileText className="h-5 w-5 mr-3" />
+                      My Job Applications
+                    </button>
+                  </li>
                   <li>
                     <button type="button" onClick={() => setActiveSection('achievements')} className={`flex items-center px-4 py-3 rounded-xl font-medium w-full text-left ${activeSection === 'achievements' ? 'bg-dental-50 text-dental-700' : 'text-neutral-700 hover:bg-neutral-50'}`}>
                       <Award className="h-5 w-5 mr-3" />
@@ -545,6 +643,16 @@ const DashboardPage = () => {
                         <p className="text-sm text-neutral-600">Organize a webinar or workshop</p>
                       </div>
                     </Link>
+                    
+                    {profile.is_verified && (
+                      <Link to="/jobs/create" className="flex items-center p-4 rounded-lg border border-neutral-200 hover:border-dental-300 hover:bg-dental-50 transition-colors">
+                        <Briefcase className="h-8 w-8 text-dental-600 mr-4" />
+                        <div>
+                          <h3 className="font-medium text-neutral-900">Post a Job</h3>
+                          <p className="text-sm text-neutral-600">Find the perfect candidate</p>
+                        </div>
+                      </Link>
+                    )}
                     
                     {!profile.is_verified && (
                       <Link to="/verification/apply" className="flex items-center p-4 rounded-lg border border-neutral-200 hover:border-blue-300 hover:bg-blue-50 transition-colors">
@@ -731,6 +839,138 @@ const DashboardPage = () => {
                             {thread.title}
                           </Link>
                           <div className="text-xs text-neutral-500 mt-1">{thread.category} • {new Date(thread.created_at).toLocaleDateString()}</div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {activeSection === 'job-listings' && (
+              <div className="max-w-3xl mx-auto px-4">
+                <h1 className="text-3xl font-bold text-neutral-900 mb-8 flex items-center gap-2">
+                  <Briefcase className="w-7 h-7 text-dental-600" /> My Job Listings
+                </h1>
+                {jobListingsLoading ? (
+                  <div className="flex items-center justify-center min-h-[200px]">
+                    <Briefcase className="w-8 h-8 animate-bounce text-dental-600 mx-auto mb-4" />
+                    <p className="text-neutral-600 ml-2">Loading your job listings...</p>
+                  </div>
+                ) : jobListingsError ? (
+                  <div className="flex items-center justify-center min-h-[200px]">
+                    <p className="text-red-600">{jobListingsError}</p>
+                  </div>
+                ) : myJobListings.length === 0 ? (
+                  <div className="bg-white rounded-xl shadow p-6 text-center">
+                    <Briefcase className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-neutral-600 mb-2">No Job Listings</h3>
+                    <p className="text-neutral-500 mb-4">You haven't posted any jobs yet.</p>
+                    <Link to="/jobs/create">
+                      <PrimaryButton className="flex items-center gap-2 mx-auto">
+                        <Plus className="h-4 w-4" />
+                        Post Your First Job
+                      </PrimaryButton>
+                    </Link>
+                  </div>
+                ) : (
+                  <ul className="space-y-4">
+                    {myJobListings.map(job => (
+                      <li key={job.id} className="bg-white rounded-xl shadow p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <Link
+                              to={`/jobs/${job.id}`}
+                              className="font-medium text-dental-700 hover:underline text-lg"
+                            >
+                              {job.title}
+                            </Link>
+                            <div className="flex items-center gap-4 text-sm text-neutral-500 mt-2">
+                              <div className="flex items-center gap-1">
+                                <Building className="w-4 h-4" />
+                                {job.company_name}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <MapPin className="w-4 h-4" />
+                                {job.location}
+                              </div>
+                              <span className="px-2 py-1 bg-dental-100 text-dental-700 rounded-full text-xs">
+                                {job.job_type.replace('-', ' ')}
+                              </span>
+                              <span className="text-xs">
+                                Posted {new Date(job.created_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
+            {activeSection === 'job-applications' && (
+              <div className="max-w-3xl mx-auto px-4">
+                <h1 className="text-3xl font-bold text-neutral-900 mb-8 flex items-center gap-2">
+                  <FileText className="w-7 h-7 text-dental-600" /> My Job Applications
+                </h1>
+                {jobApplicationsLoading ? (
+                  <div className="flex items-center justify-center min-h-[200px]">
+                    <FileText className="w-8 h-8 animate-bounce text-dental-600 mx-auto mb-4" />
+                    <p className="text-neutral-600 ml-2">Loading your job applications...</p>
+                  </div>
+                ) : jobApplicationsError ? (
+                  <div className="flex items-center justify-center min-h-[200px]">
+                    <p className="text-red-600">{jobApplicationsError}</p>
+                  </div>
+                ) : myJobApplications.length === 0 ? (
+                  <div className="bg-white rounded-xl shadow p-6 text-center">
+                    <FileText className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-neutral-600 mb-2">No Job Applications</h3>
+                    <p className="text-neutral-500 mb-4">You haven't applied for any jobs yet.</p>
+                    <Link to="/jobs">
+                      <PrimaryButton className="flex items-center gap-2 mx-auto">
+                        <Briefcase className="h-4 w-4" />
+                        Browse Jobs
+                      </PrimaryButton>
+                    </Link>
+                  </div>
+                ) : (
+                  <ul className="space-y-4">
+                    {myJobApplications.map(application => (
+                      <li key={application.id} className="bg-white rounded-xl shadow p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <Link
+                              to={`/jobs/${application.job_postings.id}`}
+                              className="font-medium text-dental-700 hover:underline text-lg"
+                            >
+                              {application.job_postings.title}
+                            </Link>
+                            <div className="flex items-center gap-4 text-sm text-neutral-500 mt-2">
+                              <div className="flex items-center gap-1">
+                                <Building className="w-4 h-4" />
+                                {application.job_postings.company_name}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                <MapPin className="w-4 h-4" />
+                                {application.job_postings.location}
+                              </div>
+                              <span className={`px-2 py-1 rounded-full text-xs font-medium ${
+                                application.status === 'pending' ? 'bg-yellow-100 text-yellow-700' :
+                                application.status === 'reviewed' ? 'bg-blue-100 text-blue-700' :
+                                application.status === 'shortlisted' ? 'bg-green-100 text-green-700' :
+                                application.status === 'hired' ? 'bg-green-100 text-green-700' :
+                                'bg-red-100 text-red-700'
+                              }`}>
+                                {application.status.charAt(0).toUpperCase() + application.status.slice(1)}
+                              </span>
+                              <span className="text-xs">
+                                Applied {new Date(application.applied_at).toLocaleDateString()}
+                              </span>
+                            </div>
+                          </div>
                         </div>
                       </li>
                     ))}

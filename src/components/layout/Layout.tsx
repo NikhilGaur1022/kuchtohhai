@@ -1,6 +1,6 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Menu, X, User, LogOut, Settings, BarChart2, Bell, FileText, Plus, BookmarkIcon, CheckCircle, ShieldCheck} from 'lucide-react';
+import { Menu, X, User, LogOut, Settings, BarChart2, Bell, FileText, Plus, BookmarkIcon, CheckCircle, ShieldCheck, Briefcase} from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 
@@ -136,6 +136,7 @@ const navLinks = [
   { name: 'Journals', href: '/journals' },
   { name: 'Forum', href: '/forum' },
   { name: 'Events', href: '/events' },
+  { name: 'Jobs', href: '/jobs' },
   { name: 'Business', href: '/business-listings' },
   { name: 'Products', href: '/products' },
   { name: 'Professors', href: '/professors' },
@@ -243,6 +244,17 @@ const navLinks = [
                           <Plus className="h-4 w-4 mr-3" />
                           Submit Article
                         </Link>
+
+                        {userProfile?.is_verified && (
+                          <Link
+                            to="/jobs/create"
+                            className="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
+                            onClick={() => setIsUserMenuOpen(false)}
+                          >
+                            <Briefcase className="h-4 w-4 mr-3" />
+                            Post Job
+                          </Link>
+                        )}
 
                         {!userProfile?.is_verified && (
                           <Link
@@ -376,6 +388,15 @@ const navLinks = [
                   >
                     Submit Article
                   </Link>
+                  {userProfile?.is_verified && (
+                    <Link
+                      to="/jobs/create"
+                      className="block px-3 py-2 text-neutral-700 hover:text-dental-600 font-medium"
+                      onClick={() => setIsMobileMenuOpen(false)}
+                    >
+                      Post Job
+                    </Link>
+                  )}
                   {!userProfile?.is_verified && (
                     <Link
                       to="/verification/apply"

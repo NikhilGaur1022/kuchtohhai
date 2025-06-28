@@ -10,6 +10,8 @@ import EventDetailPage from './pages/EventDetailPage';
 import CreateEventPage from './pages/CreateEventPage';
 import VerificationApplicationPage from './pages/VerificationApplicationPage';
 
+import JobsPage from './pages/JobsPage';
+import CreateJobPage from './pages/CreateJobPage';
 
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -23,10 +25,6 @@ import ScrollToTop from './components/common/ScrollToTop';
 
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute from './components/common/AdminRoute';
-
-
-
-
 
 function App() {
   useEffect(() => {
@@ -80,7 +78,8 @@ function App() {
           <Route path="events/create" element={<PrivateRoute><CreateEventPage /></PrivateRoute>} />
           <Route path="verification/apply" element={<PrivateRoute><VerificationApplicationPage /></PrivateRoute>} />
 
-
+          <Route path="jobs" element={<JobsPage />} />
+          <Route path="jobs/create" element={<PrivateRoute><CreateJobPage /></PrivateRoute>} />
 
           <Route path="dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
           <Route path="profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
@@ -91,7 +90,6 @@ function App() {
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
          
-        
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
