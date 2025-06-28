@@ -65,7 +65,6 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="articles" element={<ArticlesPage />} />
           <Route path="articles/:id" element={<ArticleDetailPage />} />
-          <Route path="forum" element={<ForumPage />} />
           <Route path="forum/thread/:id" element={<ThreadDetailPage />} />
           <Route path="events" element={<EventsPage />} />
           <Route path="business-listings" element={<BusinessListingsPage />} />
