@@ -37,57 +37,111 @@ const AdminVerificationPage = () => {
   const [modalType, setModalType] = useState<'approve' | 'reject' | 'view'>('view');
   const [adminNotes, setAdminNotes] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [currentUser, setCurrentUser] = useState<any>(null);
   const navigate = useNavigate();
 
-  // Check if user is admin
+  // Check if user is admin and get current user info
   useEffect(() => {
-    const checkAdmin = async () => {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        navigate('/login');
-        return;
-      }
+    const checkAdminAndGetUser = async () => {
+      try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) {
+          navigate('/login');
+          return;
+        }
 
-      const { data: profile } = await supabase
-        .from('profiles')
-        .select('role')
-        .eq('id', user.id)
-        .single();
+        setCurrentUser(user);
 
-      if (!profile || profile.role !== 'admin') {
-        navigate('/dashboard');
+        const { data: profile, error: profileError } = await supabase
+          .from('profiles')
+          .select('role, full_name')
+          .eq('id', user.id)
+          .single();
+
+        if (profileError) {
+          console.error('Error fetching profile:', profileError);
+          setError('Failed to verify admin status');
+          return;
+        }
+
+        if (!profile || profile.role !== 'admin') {
+          navigate('/dashboard');
+          return;
+        }
+
+        console.log('Admin verified:', profile);
+      } catch (err) {
+        console.error('Error in admin check:', err);
+        setError('Failed to verify admin status');
       }
     };
 
-    checkAdmin();
+    checkAdminAndGetUser();
   }, [navigate]);
 
   // Fetch verification applications
   useEffect(() => {
     const fetchApplications = async () => {
+      if (!currentUser) return;
+
       try {
+        setIsLoading(true);
+        setError(null);
+
+        console.log('Fetching verification applications...');
+
+        // First, let's check if the current user is admin
+        const { data: adminCheck, error: adminError } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', currentUser.id)
+          .single();
+
+        if (adminError) {
+          console.error('Admin check error:', adminError);
+          throw new Error('Failed to verify admin status');
+        }
+
+        if (adminCheck?.role !== 'admin') {
+          throw new Error('Access denied: Admin role required');
+        }
+
+        console.log('Admin status confirmed, fetching applications...');
+
+        // Fetch verification applications with profile data
         const { data, error: fetchError } = await supabase
           .from('verification_applications')
           .select(`
             *,
-            profiles (
+            profiles!verification_applications_user_id_fkey (
               full_name,
               email
             )
           `)
           .order('created_at', { ascending: false });
 
-        if (fetchError) throw fetchError;
+        if (fetchError) {
+          console.error('Fetch error:', fetchError);
+          throw fetchError;
+        }
+
+        console.log('Applications fetched:', data);
         setApplications(data || []);
+
+        if (!data || data.length === 0) {
+          console.log('No applications found');
+        }
+
       } catch (err) {
-        setError(err instanceof Error ? err.message : 'Failed to fetch applications');
+        console.error('Error fetching applications:', err);
+        setError(err instanceof Error ? err.message : 'Failed to fetch verification applications');
       } finally {
         setIsLoading(false);
       }
     };
 
     fetchApplications();
-  }, []);
+  }, [currentUser]);
 
   const handleViewApplication = (application: VerificationApplication) => {
     setSelectedApplication(application);
@@ -111,20 +165,17 @@ const AdminVerificationPage = () => {
   };
 
   const handleApprove = async () => {
-    if (!selectedApplication) return;
+    if (!selectedApplication || !currentUser) return;
 
     setIsSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
       // Update application status
       const { error: updateError } = await supabase
         .from('verification_applications')
         .update({
           status: 'approved',
           admin_notes: adminNotes,
-          reviewed_by: user.id,
+          reviewed_by: currentUser.id,
           reviewed_at: new Date().toISOString()
         })
         .eq('id', selectedApplication.id);
@@ -172,20 +223,17 @@ const AdminVerificationPage = () => {
   };
 
   const handleReject = async () => {
-    if (!selectedApplication || !adminNotes.trim()) return;
+    if (!selectedApplication || !adminNotes.trim() || !currentUser) return;
 
     setIsSubmitting(true);
     try {
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) throw new Error('Not authenticated');
-
       // Update application status
       const { error: updateError } = await supabase
         .from('verification_applications')
         .update({
           status: 'rejected',
           admin_notes: adminNotes,
-          reviewed_by: user.id,
+          reviewed_by: currentUser.id,
           reviewed_at: new Date().toISOString()
         })
         .eq('id', selectedApplication.id);
@@ -238,7 +286,7 @@ const AdminVerificationPage = () => {
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <Loader className="w-8 h-8 animate-spin text-dental-600 mx-auto mb-4" />
-              <div className="text-neutral-600">Loading applications...</div>
+              <div className="text-neutral-600">Loading verification applications...</div>
             </div>
           </div>
         </PageContainer>
@@ -255,7 +303,23 @@ const AdminVerificationPage = () => {
       <PageContainer>
         {error && (
           <div className="bg-red-50 text-red-700 p-4 rounded-lg mb-6">
-            {error}
+            <div className="font-medium">Error:</div>
+            <div>{error}</div>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="mt-2 text-sm underline hover:no-underline"
+            >
+              Try refreshing the page
+            </button>
+          </div>
+        )}
+
+        {/* Debug Info */}
+        {currentUser && (
+          <div className="bg-blue-50 text-blue-700 p-4 rounded-lg mb-6 text-sm">
+            <div><strong>Debug Info:</strong></div>
+            <div>Current User ID: {currentUser.id}</div>
+            <div>Applications Found: {applications.length}</div>
           </div>
         )}
 
@@ -320,7 +384,7 @@ const AdminVerificationPage = () => {
                 {applications.length === 0 ? (
                   <tr>
                     <td colSpan={6} className="px-6 py-12 text-center text-neutral-500">
-                      No verification applications found.
+                      {error ? 'Unable to fetch verification requests. Please check your admin permissions.' : 'No verification applications found.'}
                     </td>
                   </tr>
                 ) : (
