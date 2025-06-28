@@ -61,10 +61,10 @@ const JobDetailPage = () => {
   const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
-    console.log('JobDetailPage mounted with ID:', id);
+    console.log('JobDetailPage: Starting with ID:', id);
     
-    if (!id) {
-      console.log('No ID provided, redirecting to jobs');
+    if (!id || isNaN(Number(id))) {
+      console.log('JobDetailPage: Invalid ID, redirecting');
       navigate('/jobs');
       return;
     }
@@ -74,14 +74,28 @@ const JobDetailPage = () => {
         setIsLoading(true);
         setError(null);
         
-        console.log('Fetching job with ID:', id);
+        console.log('JobDetailPage: Fetching job with ID:', id);
         
-        // Fetch job with poster profile
+        // First, let's check if the job_postings table exists and has data
         const { data: jobData, error: jobError } = await supabase
           .from('job_postings')
           .select(`
-            *,
-            profiles (
+            id,
+            title,
+            company_name,
+            location,
+            job_type,
+            experience_level,
+            salary_range,
+            description,
+            requirements,
+            benefits,
+            application_deadline,
+            application_count,
+            is_active,
+            posted_by,
+            created_at,
+            profiles!job_postings_posted_by_fkey (
               full_name,
               is_verified
             )
@@ -89,49 +103,64 @@ const JobDetailPage = () => {
           .eq('id', id)
           .single();
 
-        console.log('Job fetch result:', { jobData, jobError });
+        console.log('JobDetailPage: Job fetch result:', { jobData, jobError });
 
         if (jobError) {
-          console.error('Job fetch error:', jobError);
+          console.error('JobDetailPage: Job fetch error:', jobError);
           if (jobError.code === 'PGRST116') {
             setError('Job not found');
           } else {
-            setError('Failed to load job details');
+            setError(`Failed to load job: ${jobError.message}`);
           }
           return;
         }
 
         if (!jobData) {
+          console.log('JobDetailPage: No job data returned');
           setError('Job not found');
           return;
         }
 
-        console.log('Setting job data:', jobData);
+        console.log('JobDetailPage: Setting job data:', jobData);
         setJob(jobData);
-        setIsOwner(user?.id === jobData.posted_by);
+        
+        // Check if current user is the job owner
+        const jobOwner = user?.id === jobData.posted_by;
+        setIsOwner(jobOwner);
+        console.log('JobDetailPage: Is owner?', jobOwner);
 
-        // Check if user has already applied
-        if (user) {
-          console.log('Checking if user has applied');
+        // Check if user has already applied (only if not owner)
+        if (user && !jobOwner) {
+          console.log('JobDetailPage: Checking if user has applied');
           const { data: applicationData, error: appError } = await supabase
             .from('job_applications')
             .select('id')
             .eq('job_id', id)
             .eq('applicant_id', user.id)
-            .single();
+            .maybeSingle();
 
-          console.log('Application check result:', { applicationData, appError });
-          setHasApplied(!!applicationData);
+          console.log('JobDetailPage: Application check result:', { applicationData, appError });
+          
+          if (appError && appError.code !== 'PGRST116') {
+            console.error('JobDetailPage: Error checking application:', appError);
+          } else {
+            setHasApplied(!!applicationData);
+          }
         }
 
         // If user is the job poster, fetch all applications
-        if (user?.id === jobData.posted_by) {
-          console.log('User is job owner, fetching applications');
+        if (user && jobOwner) {
+          console.log('JobDetailPage: User is job owner, fetching applications');
           const { data: applicationsData, error: applicationsError } = await supabase
             .from('job_applications')
             .select(`
-              *,
-              profiles (
+              id,
+              cover_letter,
+              resume_url,
+              status,
+              applied_at,
+              applicant_id,
+              profiles!job_applications_applicant_id_fkey (
                 full_name,
                 email,
                 phone,
@@ -142,18 +171,19 @@ const JobDetailPage = () => {
             .eq('job_id', id)
             .order('applied_at', { ascending: false });
 
-          console.log('Applications fetch result:', { applicationsData, applicationsError });
+          console.log('JobDetailPage: Applications fetch result:', { applicationsData, applicationsError });
 
           if (applicationsError) {
-            console.error('Error fetching applications:', applicationsError);
+            console.error('JobDetailPage: Error fetching applications:', applicationsError);
+            // Don't set error here, just log it
           } else {
             setApplications(applicationsData || []);
           }
         }
 
       } catch (err) {
-        console.error('Error in fetchJobAndApplications:', err);
-        setError('Failed to load job. Please try again later.');
+        console.error('JobDetailPage: Unexpected error:', err);
+        setError('An unexpected error occurred. Please try again.');
       } finally {
         setIsLoading(false);
       }
@@ -347,7 +377,7 @@ const JobDetailPage = () => {
     }
   };
 
-  console.log('Render state:', { isLoading, error, job, id });
+  console.log('JobDetailPage: Render state:', { isLoading, error, job: !!job, id });
 
   if (isLoading) {
     return (
@@ -635,12 +665,12 @@ const JobDetailPage = () => {
                         <div className="flex items-start justify-between mb-3">
                           <div>
                             <h4 className="font-medium text-neutral-900">
-                              {application.profiles.full_name}
+                              {application.profiles?.full_name || 'Applicant'}
                             </h4>
                             <p className="text-sm text-neutral-600">
-                              {application.profiles.specialty || 'Dental Professional'}
+                              {application.profiles?.specialty || 'Dental Professional'}
                             </p>
-                            {application.profiles.years_of_experience && (
+                            {application.profiles?.years_of_experience && (
                               <p className="text-xs text-neutral-500">
                                 {application.profiles.years_of_experience} years experience
                               </p>
@@ -659,7 +689,7 @@ const JobDetailPage = () => {
                           <div className="flex items-center gap-2">
                             {application.resume_url && (
                               <button
-                                onClick={() => downloadResume(application.resume_url, application.profiles.full_name)}
+                                onClick={() => downloadResume(application.resume_url, application.profiles?.full_name || 'Applicant')}
                                 className="text-dental-600 hover:text-dental-700 text-xs flex items-center gap-1"
                               >
                                 <Download className="h-3 w-3" />
