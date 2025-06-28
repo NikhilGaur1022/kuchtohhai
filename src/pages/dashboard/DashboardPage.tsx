@@ -4,7 +4,7 @@ import {
   BookOpen, Clock, Edit, Bell, User, Heart, MessageSquare, 
   Calendar, Award, FileText, Settings, LogOut, Star, 
   Bookmark, BarChart2, Users, TrendingUp, ChevronRight,
-  ShieldCheck, ThumbsUp, CheckCircle, Plus, Briefcase, MapPin, Video, Building
+  ShieldCheck, ThumbsUp, CheckCircle, Plus, Briefcase, MapPin, Video, Building, Eye
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import PageContainer from "../../components/common/PageContainer";
@@ -66,6 +66,7 @@ interface JobPosting {
   company_name: string;
   location: string;
   job_type: string;
+  application_count: number;
   created_at: string;
 }
 
@@ -337,7 +338,7 @@ const DashboardPage = () => {
     
     supabase
       .from('job_postings')
-      .select('id, title, company_name, location, job_type, created_at')
+      .select('id, title, company_name, location, job_type, application_count, created_at')
       .eq('posted_by', user.id)
       .order('created_at', { ascending: false })
       .then(({ data, error }) => {
@@ -897,11 +898,21 @@ const DashboardPage = () => {
                               <span className="px-2 py-1 bg-dental-100 text-dental-700 rounded-full text-xs">
                                 {job.job_type.replace('-', ' ')}
                               </span>
+                              <div className="flex items-center gap-1">
+                                <Users className="w-4 h-4" />
+                                {job.application_count || 0} applications
+                              </div>
                               <span className="text-xs">
                                 Posted {new Date(job.created_at).toLocaleDateString()}
                               </span>
                             </div>
                           </div>
+                          <Link to={`/jobs/${job.id}`}>
+                            <button className="flex items-center gap-1 text-dental-600 hover:text-dental-700 text-sm">
+                              <Eye className="w-4 h-4" />
+                              View
+                            </button>
+                          </Link>
                         </div>
                       </li>
                     ))}
