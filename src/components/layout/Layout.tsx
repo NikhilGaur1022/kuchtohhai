@@ -1,12 +1,13 @@
 import { Outlet, Link, useNavigate } from 'react-router-dom';
 import { useState, useEffect } from 'react';
-import { Menu, X, User, LogOut, Settings, BarChart2, Bell, FileText, Plus, BookmarkIcon} from 'lucide-react';
+import { Menu, X, User, LogOut, Settings, BarChart2, Bell, FileText, Plus, BookmarkIcon, CheckCircle, ShieldCheck} from 'lucide-react';
 import { useAuth } from '../../contexts/AuthContext';
 import { supabase } from '../../lib/supabase';
 
 interface UserProfile {
   full_name: string | null;
   email: string | null;
+  is_verified: boolean;
 }
 
 const Layout = () => {
@@ -28,7 +29,7 @@ const Layout = () => {
       try {
         const { data: profile } = await supabase
           .from('profiles')
-          .select('full_name, email')
+          .select('full_name, email, is_verified')
           .eq('id', user.id)
           .single();
 
@@ -36,7 +37,7 @@ const Layout = () => {
       } catch (error) {
         console.error('Error fetching user profile:', error);
         // Fallback to user email
-        setUserProfile({ full_name: null, email: user.email });
+        setUserProfile({ full_name: null, email: user.email, is_verified: false });
       }
     };
 
@@ -128,6 +129,7 @@ const Layout = () => {
     }
     return 'U';
   };
+
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'Articles', href: '/articles' },
@@ -136,9 +138,10 @@ const navLinks = [
   { name: 'Events', href: '/events' },
   { name: 'Business', href: '/business-listings' },
   { name: 'Products', href: '/products' },
-  { name: 'Professors', href: '/professors' }, // Changed from 'Awards' to 'Professors'
+  { name: 'Professors', href: '/professors' },
   { name: 'About', href: '/about' },
 ];
+
   return (
     <div className="min-h-screen bg-neutral-50">
       {/* Navbar */}
@@ -196,18 +199,28 @@ const navLinks = [
                           {getInitials()}
                         </span>
                       </div>
-                      <span className="font-medium text-neutral-700">
-                        {getDisplayName()}
-                      </span>
+                      <div className="flex items-center">
+                        <span className="font-medium text-neutral-700">
+                          {getDisplayName()}
+                        </span>
+                        {userProfile?.is_verified && (
+                          <CheckCircle className="h-4 w-4 ml-1 text-blue-500" title="Verified User" />
+                        )}
+                      </div>
                     </button>
 
                     {/* User Dropdown Menu */}
                     {isUserMenuOpen && (
                       <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-neutral-200">
                         <div className="px-4 py-2 border-b border-neutral-100">
-                          <p className="text-sm font-medium text-neutral-900">
-                            {getDisplayName()}
-                          </p>
+                          <div className="flex items-center">
+                            <p className="text-sm font-medium text-neutral-900">
+                              {getDisplayName()}
+                            </p>
+                            {userProfile?.is_verified && (
+                              <CheckCircle className="h-3 w-3 ml-1 text-blue-500" />
+                            )}
+                          </div>
                           <p className="text-xs text-neutral-500 truncate">
                             {userProfile?.email || user.email}
                           </p>
@@ -230,16 +243,37 @@ const navLinks = [
                           <Plus className="h-4 w-4 mr-3" />
                           Submit Article
                         </Link>
-                        
-                        {isAdmin && (
+
+                        {!userProfile?.is_verified && (
                           <Link
-                            to="/admin/articles"
+                            to="/verification/apply"
                             className="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
                             onClick={() => setIsUserMenuOpen(false)}
                           >
-                            <Settings className="h-4 w-4 mr-3" />
-                            Admin Panel
+                            <CheckCircle className="h-4 w-4 mr-3" />
+                            Get Verified
                           </Link>
+                        )}
+                        
+                        {isAdmin && (
+                          <>
+                            <Link
+                              to="/admin/articles"
+                              className="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
+                              onClick={() => setIsUserMenuOpen(false)}
+                            >
+                              <Settings className="h-4 w-4 mr-3" />
+                              Manage Articles
+                            </Link>
+                            <Link
+                              to="/admin/verifications"
+                              className="flex items-center px-4 py-2 text-sm text-neutral-700 hover:bg-neutral-50"
+                              onClick={() => setIsUserMenuOpen(false)}
+                            >
+                              <ShieldCheck className="h-4 w-4 mr-3" />
+                              Manage Verifications
+                            </Link>
+                          </>
                         )}
 
                         <Link
@@ -316,9 +350,14 @@ const navLinks = [
                 <>
                   <hr className="my-2" />
                   <div className="px-3 py-2">
-                    <p className="text-sm font-medium text-neutral-900">
-                      {getDisplayName()}
-                    </p>
+                    <div className="flex items-center">
+                      <p className="text-sm font-medium text-neutral-900">
+                        {getDisplayName()}
+                      </p>
+                      {userProfile?.is_verified && (
+                        <CheckCircle className="h-3 w-3 ml-1 text-blue-500" />
+                      )}
+                    </div>
                     <p className="text-xs text-neutral-500">
                       {userProfile?.email || user.email}
                     </p>
@@ -337,14 +376,32 @@ const navLinks = [
                   >
                     Submit Article
                   </Link>
-                  {isAdmin && (
+                  {!userProfile?.is_verified && (
                     <Link
-                      to="/admin/articles"
+                      to="/verification/apply"
                       className="block px-3 py-2 text-neutral-700 hover:text-dental-600 font-medium"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      Admin Panel
+                      Get Verified
                     </Link>
+                  )}
+                  {isAdmin && (
+                    <>
+                      <Link
+                        to="/admin/articles"
+                        className="block px-3 py-2 text-neutral-700 hover:text-dental-600 font-medium"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Manage Articles
+                      </Link>
+                      <Link
+                        to="/admin/verifications"
+                        className="block px-3 py-2 text-neutral-700 hover:text-dental-600 font-medium"
+                        onClick={() => setIsMobileMenuOpen(false)}
+                      >
+                        Manage Verifications
+                      </Link>
+                    </>
                   )}
                   <Link
                     to="/profile"

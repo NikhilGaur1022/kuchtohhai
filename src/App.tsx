@@ -3,21 +3,34 @@ import { Routes, Route } from 'react-router-dom';
 import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import ArticlesPage from './pages/ArticlesPage';
-import ArticleDetailPage from './pages/ArticleDetailPage'; // New import
+import ArticleDetailPage from './pages/ArticleDetailPage';
+import JournalsPage from './pages/JournalsPage';
+import ForumPage from './pages/ForumPage';
+import ThreadDetailPage from './pages/ThreadDetailPage';
 import EventsPage from './pages/EventsPage';
-
-
+import EventDetailPage from './pages/EventDetailPage';
+import CreateEventPage from './pages/CreateEventPage';
+import VerificationApplicationPage from './pages/VerificationApplicationPage';
+import BusinessListingsPage from './pages/BusinessListingsPage';
+import ProductsPage from './pages/ProductsPage';
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ProfilePage from './pages/dashboard/ProfilePage';
 import AdminArticlesPage from './pages/dashboard/AdminArticlesPage';
-
+import AdminVerificationPage from './pages/dashboard/AdminVerificationPage';
+import SubmissionPage from './pages/SubmissionPage';
 import NotFoundPage from './pages/NotFoundPage';
 import ScrollToTop from './components/common/ScrollToTop';
+import AboutPage from './pages/AboutPage';
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute from './components/common/AdminRoute';
-
+import NotificationsPage from './pages/NotificationsPage';
+import EditArticlePage from './pages/EditArticlePage';
+import MyArticlesPage from './pages/MyArticlesPage';
+import ProfessorsPage from './pages/ProfessorsPage';
+import ProfessorDetailPage from './pages/ProfessorDetailPage';
+import ProfessorArticlesPage from './pages/ProfessorArticlesPage';
 
 function App() {
   useEffect(() => {
@@ -65,14 +78,31 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="articles" element={<ArticlesPage />} />
           <Route path="articles/:id" element={<ArticleDetailPage />} />
+          <Route path="journals" element={<JournalsPage />} />
+          <Route path="forum" element={<ForumPage />} />
+          <Route path="forum/thread/:id" element={<ThreadDetailPage />} />
           <Route path="events" element={<EventsPage />} />
+          <Route path="events/:id" element={<EventDetailPage />} />
+          <Route path="events/create" element={<PrivateRoute><CreateEventPage /></PrivateRoute>} />
+          <Route path="verification/apply" element={<PrivateRoute><VerificationApplicationPage /></PrivateRoute>} />
+          <Route path="business-listings" element={<BusinessListingsPage />} />
+          <Route path="products" element={<ProductsPage />} />
+          <Route path="professors" element={<ProfessorsPage />} />
+          <Route path="professors/:id/articles" element={<ProfessorArticlesPage />} />
+          <Route path="professors/:id" element={<ProfessorDetailPage />} />
+          <Route path="about" element={<AboutPage />} />
+          <Route path="submit" element={<PrivateRoute><SubmissionPage /></PrivateRoute>} />
           <Route path="dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
           <Route path="profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
           <Route path="admin">
             <Route path="articles" element={<AdminRoute><AdminArticlesPage /></AdminRoute>} />
+            <Route path="verifications" element={<AdminRoute><AdminVerificationPage /></AdminRoute>} />
           </Route>
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
+          <Route path="notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
+          <Route path="edit-article/:id" element={<PrivateRoute><EditArticlePage /></PrivateRoute>} />
+          <Route path="my-articles" element={<PrivateRoute><MyArticlesPage /></PrivateRoute>} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

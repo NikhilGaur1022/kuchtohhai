@@ -4,7 +4,7 @@ import {
   BookOpen, Clock, Edit, Bell, User, Heart, MessageSquare, 
   Calendar, Award, FileText, Settings, LogOut, Star, 
   Bookmark, BarChart2, Users, TrendingUp, ChevronRight,
-  ShieldCheck, ThumbsUp
+  ShieldCheck, ThumbsUp, CheckCircle, Plus
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import PageContainer from "../../components/common/PageContainer";
@@ -36,17 +36,28 @@ interface SavedArticle {
   category: string;
   created_at: string;
 }
+
 interface SavedThread {
   id: string;
   title: string;
   category: string;
   created_at: string;
 }
+
 interface Thread {
   id: string;
   title: string;
   category: string;
   created_at: string;
+}
+
+interface Event {
+  id: number;
+  title: string;
+  date: string;
+  location: string;
+  type: string;
+  is_virtual: boolean;
 }
 
 const DashboardPage = () => {
@@ -57,15 +68,22 @@ const DashboardPage = () => {
   const [commentsCount, setCommentsCount] = useState<number | null>(null);
   const [recentActivity, setRecentActivity] = useState<any[]>([]);
   const [activeSection, setActiveSection] = useState<'dashboard' | 'saved' | 'events' | 'discussions' | 'achievements' | 'settings'>('dashboard');
+  
   // Saved Items state
   const [savedLoading, setSavedLoading] = useState(false);
   const [savedArticles, setSavedArticles] = useState<SavedArticle[]>([]);
   const [savedThreads, setSavedThreads] = useState<SavedThread[]>([]);
   const [savedError, setSavedError] = useState<string | null>(null);
+  
   // My Discussions state
   const [discussionsLoading, setDiscussionsLoading] = useState(false);
   const [myThreads, setMyThreads] = useState<Thread[]>([]);
   const [discussionsError, setDiscussionsError] = useState<string | null>(null);
+  
+  // My Events state
+  const [eventsLoading, setEventsLoading] = useState(false);
+  const [myEvents, setMyEvents] = useState<Event[]>([]);
+  const [eventsError, setEventsError] = useState<string | null>(null);
 
   useEffect(() => {
     document.title = 'Dashboard | DentalReach';
@@ -99,7 +117,7 @@ const DashboardPage = () => {
       const { count, error } = await supabase
         .from('articles')
         .select('*', { count: 'exact', head: true })
-        .eq('user_id', user.id); // FIXED: use user_id instead of author_id
+        .eq('user_id', user.id);
       if (error) {
         console.error('Error fetching articles authored:', error);
         setArticlesAuthored(null);
@@ -126,45 +144,41 @@ const DashboardPage = () => {
     // Fetch recent activity
     const fetchRecentActivity = async () => {
       if (!user) return;
-      // Fetch latest 5: comments, articles, likes, threads (discussions started)
-      // 1. Articles authored
+      
+      const activity = [];
+      
+      // Fetch latest articles
       const { data: articles } = await supabase
         .from('articles')
         .select('id, title, created_at')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(3);
-      // 2. Comments (posts)
+      
+      // Fetch latest comments
       const { data: comments } = await supabase
         .from('posts')
         .select('id, content, thread_id, created_at')
         .eq('author_id', user.id)
         .order('created_at', { ascending: false })
         .limit(3);
-      // 3. Threads started
+      
+      // Fetch latest threads
       const { data: threads } = await supabase
         .from('threads')
         .select('id, title, created_at')
         .eq('author_id', user.id)
         .order('created_at', { ascending: false })
         .limit(2);
-      // 4. Likes (article_likes on your own posts)
+      
+      // Fetch latest likes
       const { data: likes } = await supabase
         .from('article_likes')
         .select('id, article_id, created_at, articles (title)')
         .eq('user_id', user.id)
         .order('created_at', { ascending: false })
         .limit(3);
-      // 5. Thread likes (post_likes on threads)
-      const { data: threadLikes } = await supabase
-        .from('post_likes')
-        .select('id, post_id, created_at, posts (thread_id, content, threads (title))')
-        .eq('user_id', user.id)
-        .eq('is_like', true)
-        .order('created_at', { ascending: false })
-        .limit(3);
-      // Merge and sort by created_at
-      const activity = [];
+
       if (articles) activity.push(...articles.map(a => ({ type: 'article', text: `You published "${a.title}"`, time: a.created_at })));
       if (comments) activity.push(...comments.map(c => ({ type: 'comment', text: `You commented: "${c.content.slice(0, 40)}${c.content.length > 40 ? '...' : ''}"`, time: c.created_at })));
       if (threads) activity.push(...threads.map(t => ({ type: 'discussion', text: `You started a discussion: "${t.title}"`, time: t.created_at })));
@@ -172,16 +186,7 @@ const DashboardPage = () => {
         const title = Array.isArray(l.articles) && l.articles.length > 0 ? l.articles[0].title : l.articles?.title || 'an article';
         return { type: 'like', text: `You liked "${title}"`, time: l.created_at };
       }));
-      if (threadLikes) activity.push(...threadLikes.map(l => {
-        let threadTitle = 'a thread';
-        if (l.posts && Array.isArray(l.posts)) {
-          const post = l.posts[0];
-          if (post && post.threads && Array.isArray(post.threads) && post.threads.length > 0) {
-            threadTitle = post.threads[0].title;
-          }
-        }
-        return { type: 'thread_like', text: `You liked discussion "${threadTitle}"`, time: l.created_at };
-      }));
+
       // Sort by time desc, take top 5
       activity.sort((a, b) => new Date(b.time).getTime() - new Date(a.time).getTime());
       setRecentActivity(activity.slice(0, 5));
@@ -193,67 +198,24 @@ const DashboardPage = () => {
     fetchRecentActivity();
   }, [user]);
 
-  // Recent activity mock data
-  // const recentActivity = [
-  //   { type: 'comment', text: 'You commented on "Advanced Endodontic Techniques"', time: '2 hours ago' },
-  //   { type: 'like', text: 'You liked "The Future of Digital Dentistry"', time: '1 day ago' },
-  //   { type: 'article', text: 'You published "Patient Communication Strategies"', time: '3 days ago' },
-  //   { type: 'event', text: 'You registered for "2025 Digital Dentistry Summit"', time: '1 week ago' }
-  // ];
-
-  // Mock recommended articles
-  const recommendedArticles = [
-    {
-      title: 'Latest Advances in Dental Implant Surface Technology',
-      author: 'Dr. Sarah Johnson',
-      category: 'Clinical Dentistry',
-      image: 'https://images.pexels.com/photos/3845708/pexels-photo-3845708.jpeg?auto=compress&cs=tinysrgb&w=300'
-    },
-    {
-      title: 'Digital Workflow in Modern Orthodontic Practice',
-      author: 'Dr. Michael Chen',
-      category: 'Dental Technology',
-      image: 'https://images.pexels.com/photos/3845727/pexels-photo-3845727.jpeg?auto=compress&cs=tinysrgb&w=300'
-    },
-    {
-      title: 'Ethical Considerations in Cosmetic Dentistry',
-      author: 'Dr. Emily Rodriguez',
-      category: 'Ethics & Practice',
-      image: 'https://images.pexels.com/photos/3845757/pexels-photo-3845757.jpeg?auto=compress&cs=tinysrgb&w=300'
-    }
-  ];
-
-  // Upcoming events mock data
-  const upcomingEvents = [
-    {
-      title: 'Digital Dentistry Summit 2025',
-      date: 'May 25-27, 2025',
-      location: 'Virtual',
-      registered: true
-    },
-    {
-      title: 'Advanced Implantology Workshop',
-      date: 'June 10, 2025',
-      location: 'New York, NY',
-      registered: false
-    }
-  ];
-
   // Fetch saved items when section is selected
   useEffect(() => {
     if (activeSection !== 'saved' || !user) return;
     setSavedLoading(true);
     setSavedError(null);
+    
     const fetchSavedArticles = supabase
       .from('saved_articles')
       .select(`id, created_at, articles (id, title, abstract, author, category, created_at)`)
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
+    
     const fetchSavedThreads = supabase
       .from('saved_threads')
       .select(`id, created_at, threads (id, title, category, created_at)`)
       .eq('user_id', user.id)
       .order('created_at', { ascending: false });
+    
     Promise.all([fetchSavedArticles, fetchSavedThreads])
       .then(([articlesRes, threadsRes]) => {
         const articles: SavedArticle[] = (articlesRes.data || []).filter((item: any) => item.articles).map((item: any) => ({
@@ -265,6 +227,7 @@ const DashboardPage = () => {
           created_at: item.articles.created_at,
         }));
         setSavedArticles(articles);
+        
         const threads: SavedThread[] = (threadsRes.data || []).filter((item: any) => item.threads).map((item: any) => ({
           id: item.threads.id,
           title: item.threads.title,
@@ -282,6 +245,7 @@ const DashboardPage = () => {
     if (activeSection !== 'discussions' || !user) return;
     setDiscussionsLoading(true);
     setDiscussionsError(null);
+    
     supabase
       .from('threads')
       .select('id, title, category, created_at')
@@ -295,6 +259,43 @@ const DashboardPage = () => {
           setMyThreads((data || []) as Thread[]);
         }
         setDiscussionsLoading(false);
+      });
+  }, [activeSection, user]);
+
+  // Fetch my events when section is selected
+  useEffect(() => {
+    if (activeSection !== 'events' || !user) return;
+    setEventsLoading(true);
+    setEventsError(null);
+    
+    supabase
+      .from('event_registrations')
+      .select(`
+        id,
+        events (
+          id,
+          title,
+          date,
+          location,
+          
+          type,
+          is_virtual
+        )
+      `)
+      .eq('user_id', user.id)
+      .eq('status', 'registered')
+      .order('created_at', { ascending: false })
+      .then(({ data, error }) => {
+        if (error) {
+          setEventsError('Failed to load your events.');
+          setMyEvents([]);
+        } else {
+          const events: Event[] = (data || [])
+            .filter((item: any) => item.events)
+            .map((item: any) => item.events);
+          setMyEvents(events);
+        }
+        setEventsLoading(false);
       });
   }, [activeSection, user]);
 
@@ -367,12 +368,22 @@ const DashboardPage = () => {
                 </div>
               </div>
               <div className="pt-16 px-6 pb-6">
-                <h2 className="text-xl font-semibold mb-1">{displayName}</h2>
+                <div className="flex items-center gap-2 mb-1">
+                  <h2 className="text-xl font-semibold">{displayName}</h2>
+                  {profile.is_verified && (
+                    <CheckCircle className="h-5 w-5 text-blue-500" title="Verified User" />
+                  )}
+                </div>
                 <p className="text-neutral-500 capitalize mb-4">{profile.role}</p>
-                <div className="flex space-x-2 mb-4">
+                <div className="flex flex-wrap gap-2 mb-4">
                   {isAdmin && (
                     <span className="px-3 py-1 bg-dental-100 text-dental-700 rounded-full text-xs font-medium">
                       Admin
+                    </span>
+                  )}
+                  {profile.is_verified && (
+                    <span className="px-3 py-1 bg-blue-100 text-blue-700 rounded-full text-xs font-medium">
+                      Verified
                     </span>
                   )}
                   <span className="px-3 py-1 bg-dental-100 text-dental-700 rounded-full text-xs font-medium">
@@ -399,12 +410,20 @@ const DashboardPage = () => {
                     </button>
                   </li>
                   {isAdmin && (
-                    <li>
-                      <Link to="/admin/articles" className="flex items-center px-4 py-3 rounded-xl text-neutral-700 hover:bg-neutral-50">
-                        <ShieldCheck className="h-5 w-5 mr-3" />
-                        Manage Articles
-                      </Link>
-                    </li>
+                    <>
+                      <li>
+                        <Link to="/admin/articles" className="flex items-center px-4 py-3 rounded-xl text-neutral-700 hover:bg-neutral-50">
+                          <ShieldCheck className="h-5 w-5 mr-3" />
+                          Manage Articles
+                        </Link>
+                      </li>
+                      <li>
+                        <Link to="/admin/verifications" className="flex items-center px-4 py-3 rounded-xl text-neutral-700 hover:bg-neutral-50">
+                          <CheckCircle className="h-5 w-5 mr-3" />
+                          Manage Verifications
+                        </Link>
+                      </li>
+                    </>
                   )}
                   <li>
                     <button type="button" onClick={() => setActiveSection('saved')} className={`flex items-center px-4 py-3 rounded-xl font-medium w-full text-left ${activeSection === 'saved' ? 'bg-dental-50 text-dental-700' : 'text-neutral-700 hover:bg-neutral-50'}`}>
@@ -483,75 +502,64 @@ const DashboardPage = () => {
                 <Card>
                   <SectionHeading title="Recent Activity" />
                   <div className="space-y-4">
-                    {recentActivity.map((activity, idx) => (
-                      <div key={idx} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-neutral-50">
-                        <div className="mt-1">
-                          {activity.type === 'comment' && <MessageSquare className="h-4 w-4 text-dental-500" />}
-                          {activity.type === 'like' && <Heart className="h-4 w-4 text-dental-500" />}
-                          {activity.type === 'thread_like' && <ThumbsUp className="h-4 w-4 text-blue-500" />}
-                          {activity.type === 'article' && <FileText className="h-4 w-4 text-dental-500" />}
-                          {activity.type === 'discussion' && <BarChart2 className="h-4 w-4 text-dental-500" />}
-                        </div>
-                        <div className="flex-1">
-                          <p className="text-sm text-neutral-700">{activity.text}</p>
-                          <p className="text-xs text-neutral-500 mt-1">{formatElapsedTime(activity.time)}</p>
-                        </div>
+                    {recentActivity.length === 0 ? (
+                      <div className="text-center py-8 text-neutral-500">
+                        <p>No recent activity. Start by publishing an article or joining a discussion!</p>
                       </div>
-                    ))}
+                    ) : (
+                      recentActivity.map((activity, idx) => (
+                        <div key={idx} className="flex items-start space-x-3 p-3 rounded-lg hover:bg-neutral-50">
+                          <div className="mt-1">
+                            {activity.type === 'comment' && <MessageSquare className="h-4 w-4 text-dental-500" />}
+                            {activity.type === 'like' && <Heart className="h-4 w-4 text-dental-500" />}
+                            {activity.type === 'thread_like' && <ThumbsUp className="h-4 w-4 text-blue-500" />}
+                            {activity.type === 'article' && <FileText className="h-4 w-4 text-dental-500" />}
+                            {activity.type === 'discussion' && <BarChart2 className="h-4 w-4 text-dental-500" />}
+                          </div>
+                          <div className="flex-1">
+                            <p className="text-sm text-neutral-700">{activity.text}</p>
+                            <p className="text-xs text-neutral-500 mt-1">{formatElapsedTime(activity.time)}</p>
+                          </div>
+                        </div>
+                      ))
+                    )}
                   </div>
                 </Card>
 
-                {/* Recommended Articles */}
+                {/* Quick Actions */}
                 <Card>
-                  <SectionHeading title="Recommended for You" />
-                  <div className="grid gap-4">
-                    {recommendedArticles.map((article, idx) => (
-                      <div key={idx} className="flex space-x-4 p-4 rounded-lg hover:bg-neutral-50 cursor-pointer">
-                        <img 
-                          src={article.image} 
-                          alt={article.title}
-                          className="w-16 h-16 rounded-lg object-cover"
-                        />
-                        <div className="flex-1">
-                          <h4 className="font-medium text-neutral-900 mb-1">{article.title}</h4>
-                          <p className="text-sm text-neutral-600">by {article.author}</p>
-                          <span className="inline-block text-xs bg-dental-100 text-dental-700 px-2 py-1 rounded-full mt-2">
-                            {article.category}
-                          </span>
-                        </div>
-                        <ChevronRight className="h-5 w-5 text-neutral-400" />
+                  <SectionHeading title="Quick Actions" />
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Link to="/submit" className="flex items-center p-4 rounded-lg border border-neutral-200 hover:border-dental-300 hover:bg-dental-50 transition-colors">
+                      <Plus className="h-8 w-8 text-dental-600 mr-4" />
+                      <div>
+                        <h3 className="font-medium text-neutral-900">Submit Article</h3>
+                        <p className="text-sm text-neutral-600">Share your knowledge with the community</p>
                       </div>
-                    ))}
-                  </div>
-                </Card>
-
-                {/* Upcoming Events */}
-                <Card>
-                  <SectionHeading title="Upcoming Events" />
-                  <div className="space-y-4">
-                    {upcomingEvents.map((event, idx) => (
-                      <div key={idx} className="flex items-center justify-between p-4 rounded-lg border border-neutral-200">
+                    </Link>
+                    
+                    <Link to="/events/create" className="flex items-center p-4 rounded-lg border border-neutral-200 hover:border-dental-300 hover:bg-dental-50 transition-colors">
+                      <Calendar className="h-8 w-8 text-dental-600 mr-4" />
+                      <div>
+                        <h3 className="font-medium text-neutral-900">Create Event</h3>
+                        <p className="text-sm text-neutral-600">Organize a webinar or workshop</p>
+                      </div>
+                    </Link>
+                    
+                    {!profile.is_verified && (
+                      <Link to="/verification/apply" className="flex items-center p-4 rounded-lg border border-neutral-200 hover:border-blue-300 hover:bg-blue-50 transition-colors">
+                        <CheckCircle className="h-8 w-8 text-blue-600 mr-4" />
                         <div>
-                          <h4 className="font-medium text-neutral-900">{event.title}</h4>
-                          <p className="text-sm text-neutral-600">{event.date} • {event.location}</p>
+                          <h3 className="font-medium text-neutral-900">Get Verified</h3>
+                          <p className="text-sm text-neutral-600">Apply for verification to create events</p>
                         </div>
-                        <div className="flex items-center space-x-2">
-                          {event.registered ? (
-                            <span className="text-sm text-dental-600 bg-dental-50 px-3 py-1 rounded-full">
-                              Registered
-                            </span>
-                          ) : (
-                            <button className="text-sm text-dental-600 hover:text-dental-700 font-medium">
-                              Register
-                            </button>
-                          )}
-                        </div>
-                      </div>
-                    ))}
+                      </Link>
+                    )}
                   </div>
                 </Card>
               </>
             )}
+
             {activeSection === 'saved' && (
               <div className="max-w-3xl mx-auto px-4">
                 <h1 className="text-3xl font-bold text-neutral-900 mb-8 flex items-center gap-2">
@@ -595,6 +603,7 @@ const DashboardPage = () => {
                         </ul>
                       )}
                     </section>
+                    
                     {/* Saved Discussions */}
                     <section>
                       <h2 className="text-xl font-semibold text-neutral-800 mb-4 flex items-center gap-2">
@@ -624,6 +633,76 @@ const DashboardPage = () => {
                 )}
               </div>
             )}
+
+            {activeSection === 'events' && (
+              <div className="max-w-3xl mx-auto px-4">
+                <h1 className="text-3xl font-bold text-neutral-900 mb-8 flex items-center gap-2">
+                  <Calendar className="w-7 h-7 text-dental-600" /> My Events
+                </h1>
+                {eventsLoading ? (
+                  <div className="flex items-center justify-center min-h-[200px]">
+                    <Calendar className="w-8 h-8 animate-bounce text-dental-600 mx-auto mb-4" />
+                    <p className="text-neutral-600 ml-2">Loading your events...</p>
+                  </div>
+                ) : eventsError ? (
+                  <div className="flex items-center justify-center min-h-[200px]">
+                    <p className="text-red-600">{eventsError}</p>
+                  </div>
+                ) : myEvents.length === 0 ? (
+                  <div className="bg-white rounded-xl shadow p-6 text-center">
+                    <Calendar className="w-12 h-12 text-neutral-300 mx-auto mb-4" />
+                    <h3 className="text-lg font-semibold text-neutral-600 mb-2">No Events Registered</h3>
+                    <p className="text-neutral-500 mb-4">You haven't registered for any events yet.</p>
+                    <Link to="/events">
+                      <PrimaryButton className="flex items-center gap-2 mx-auto">
+                        <Calendar className="h-4 w-4" />
+                        Browse Events
+                      </PrimaryButton>
+                    </Link>
+                  </div>
+                ) : (
+                  <ul className="space-y-4">
+                    {myEvents.map(event => (
+                      <li key={event.id} className="bg-white rounded-xl shadow p-4">
+                        <div className="flex items-start justify-between">
+                          <div className="flex-1">
+                            <Link
+                              to={`/events/${event.id}`}
+                              className="font-medium text-dental-700 hover:underline text-lg"
+                            >
+                              {event.title}
+                            </Link>
+                            <div className="flex items-center gap-4 text-sm text-neutral-500 mt-2">
+                              <div className="flex items-center gap-1">
+                                <Calendar className="w-4 h-4" />
+                                {new Date(event.date).toLocaleDateString()}
+                              </div>
+                              <div className="flex items-center gap-1">
+                                {event.is_virtual ? (
+                                  <>
+                                    <Video className="w-4 h-4" />
+                                    Virtual
+                                  </>
+                                ) : (
+                                  <>
+                                    <MapPin className="w-4 h-4" />
+                                    {event.location}
+                                  </>
+                                )}
+                              </div>
+                              <span className="px-2 py-1 bg-dental-100 text-dental-700 rounded-full text-xs">
+                                {event.type}
+                              </span>
+                            </div>
+                          </div>
+                        </div>
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            )}
+
             {activeSection === 'discussions' && (
               <div className="max-w-3xl mx-auto px-4">
                 <h1 className="text-3xl font-bold text-neutral-900 mb-8 flex items-center gap-2">
@@ -659,12 +738,14 @@ const DashboardPage = () => {
                 )}
               </div>
             )}
+
             {activeSection === 'achievements' && (
               <Card>
                 <SectionHeading title="Achievements" />
                 <div className="text-neutral-500">Your badges and achievements will appear here.</div>
               </Card>
             )}
+
             {activeSection === 'settings' && (
               <Card>
                 <SectionHeading title="Settings" />
@@ -680,7 +761,7 @@ const DashboardPage = () => {
 
 export default DashboardPage;
 
-// Add this helper function at the top or bottom of the file:
+// Helper function to format elapsed time
 function formatElapsedTime(dateString: string) {
   const now = new Date();
   const then = new Date(dateString);
