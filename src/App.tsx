@@ -10,7 +10,7 @@ import EventDetailPage from './pages/EventDetailPage';
 import CreateEventPage from './pages/CreateEventPage';
 import VerificationApplicationPage from './pages/VerificationApplicationPage';
 
-import ProductsPage from './pages/ProductsPage';
+
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
@@ -82,7 +82,7 @@ function App() {
           <Route path="events/create" element={<PrivateRoute><CreateEventPage /></PrivateRoute>} />
           <Route path="verification/apply" element={<PrivateRoute><VerificationApplicationPage /></PrivateRoute>} />
 
-          <Route path="products" element={<ProductsPage />} />
+
           <Route path="professors" element={<ProfessorsPage />} />
           <Route path="professors/:id/articles" element={<ProfessorArticlesPage />} />
           <Route path="professors/:id" element={<ProfessorDetailPage />} />
