@@ -6,7 +6,7 @@ import ArticlesPage from './pages/ArticlesPage';
 import ArticleDetailPage from './pages/ArticleDetailPage'; // New import
 import EventsPage from './pages/EventsPage';
 
-import ProductsPage from './pages/ProductsPage';
+
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
