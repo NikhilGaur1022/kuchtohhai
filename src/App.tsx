@@ -72,9 +72,7 @@ function App() {
             <Route path="articles" element={<AdminRoute><AdminArticlesPage /></AdminRoute>} />
           </Route>
           <Route path="login" element={<LoginPage />} />
-          <Route path="register" element={<RegisterPage />} 
- 
-
+          <Route path="register" element={<RegisterPage />} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
