@@ -25,7 +25,7 @@ import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute from './components/common/AdminRoute';
 
 
-import MyArticlesPage from './pages/MyArticlesPage';
+
 import ProfessorsPage from './pages/ProfessorsPage';
 import ProfessorDetailPage from './pages/ProfessorDetailPage';
 import ProfessorArticlesPage from './pages/ProfessorArticlesPage';
@@ -98,7 +98,6 @@ function App() {
           <Route path="register" element={<RegisterPage />} />
          
         
-          <Route path="my-articles" element={<PrivateRoute><MyArticlesPage /></PrivateRoute>} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
