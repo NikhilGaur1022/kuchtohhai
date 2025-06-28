@@ -17,7 +17,7 @@ import DashboardPage from './pages/dashboard/DashboardPage';
 import ProfilePage from './pages/dashboard/ProfilePage';
 import AdminArticlesPage from './pages/dashboard/AdminArticlesPage';
 import AdminVerificationPage from './pages/dashboard/AdminVerificationPage';
-import SubmissionPage from './pages/SubmissionPage';
+
 import NotFoundPage from './pages/NotFoundPage';
 import ScrollToTop from './components/common/ScrollToTop';
 import AboutPage from './pages/AboutPage';
@@ -87,7 +87,7 @@ function App() {
           <Route path="professors/:id/articles" element={<ProfessorArticlesPage />} />
           <Route path="professors/:id" element={<ProfessorDetailPage />} />
           <Route path="about" element={<AboutPage />} />
-          <Route path="submit" element={<PrivateRoute><SubmissionPage /></PrivateRoute>} />
+
           <Route path="dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
           <Route path="profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
           <Route path="admin">
