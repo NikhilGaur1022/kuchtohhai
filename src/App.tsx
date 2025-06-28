@@ -73,7 +73,6 @@ function App() {
           </Route>
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
-          <Route path="my-articles" element={<PrivateRoute><MyArticlesPage /></PrivateRoute>} />
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>
