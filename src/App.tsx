@@ -11,6 +11,7 @@ import CreateEventPage from './pages/CreateEventPage';
 import VerificationApplicationPage from './pages/VerificationApplicationPage';
 
 import JobsPage from './pages/JobsPage';
+import JobDetailPage from './pages/JobDetailPage';
 import CreateJobPage from './pages/CreateJobPage';
 
 import LoginPage from './pages/auth/LoginPage';
@@ -79,6 +80,7 @@ function App() {
           <Route path="verification/apply" element={<PrivateRoute><VerificationApplicationPage /></PrivateRoute>} />
 
           <Route path="jobs" element={<JobsPage />} />
+          <Route path="jobs/:id" element={<JobDetailPage />} />
           <Route path="jobs/create" element={<PrivateRoute><CreateJobPage /></PrivateRoute>} />
 
           <Route path="dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
@@ -89,7 +91,7 @@ function App() {
           </Route>
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
-         
+          
           <Route path="*" element={<NotFoundPage />} />
         </Route>
       </Routes>

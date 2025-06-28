@@ -4,7 +4,7 @@ import {
   BookOpen, Clock, Edit, Bell, User, Heart, MessageSquare, 
   Calendar, Award, FileText, Settings, LogOut, Star, 
   Bookmark, BarChart2, Users, TrendingUp, ChevronRight,
-  ShieldCheck, ThumbsUp, CheckCircle, Plus, Briefcase, MapPin, Video
+  ShieldCheck, ThumbsUp, CheckCircle, Plus, Briefcase, MapPin, Video, Building
 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import PageContainer from "../../components/common/PageContainer";

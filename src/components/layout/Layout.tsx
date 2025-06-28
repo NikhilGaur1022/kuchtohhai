@@ -133,13 +133,8 @@ const Layout = () => {
 const navLinks = [
   { name: 'Home', href: '/' },
   { name: 'Articles', href: '/articles' },
-  { name: 'Journals', href: '/journals' },
-  { name: 'Forum', href: '/forum' },
   { name: 'Events', href: '/events' },
   { name: 'Jobs', href: '/jobs' },
-  { name: 'Business', href: '/business-listings' },
-  { name: 'Products', href: '/products' },
-  { name: 'Professors', href: '/professors' },
   { name: 'About', href: '/about' },
 ];
 
