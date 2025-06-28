@@ -12,7 +12,7 @@ import RegisterPage from './pages/auth/RegisterPage';
 import DashboardPage from './pages/dashboard/DashboardPage';
 import ProfilePage from './pages/dashboard/ProfilePage';
 import AdminArticlesPage from './pages/dashboard/AdminArticlesPage';
-import SubmissionPage from './pages/SubmissionPage';
+
 import NotFoundPage from './pages/NotFoundPage';
 import ScrollToTop from './components/common/ScrollToTop';
 import AboutPage from './pages/AboutPage';
