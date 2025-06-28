@@ -15,7 +15,6 @@ import AdminArticlesPage from './pages/dashboard/AdminArticlesPage';
 
 import NotFoundPage from './pages/NotFoundPage';
 import ScrollToTop from './components/common/ScrollToTop';
-import AboutPage from './pages/AboutPage';
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute from './components/common/AdminRoute';
 import NotificationsPage from './pages/NotificationsPage';
