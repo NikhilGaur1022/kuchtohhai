@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useParams, useNavigate, Link } from 'react-router-dom';
-import { ArrowLeft, Calendar, Clock, MapPin, Users, User, Building, DollarSign, CheckCircle, Briefcase, Upload, FileText, Eye } from 'lucide-react';
+import { ArrowLeft, Calendar, Clock, MapPin, Users, User, Building, DollarSign, CheckCircle, Briefcase, Upload, FileText, Eye, Download } from 'lucide-react';
 import { supabase } from '../lib/supabase';
 import { useAuth } from '../contexts/AuthContext';
 import PrimaryButton from '../components/common/PrimaryButton';
@@ -34,6 +34,7 @@ interface JobApplication {
   resume_url: string;
   status: string;
   applied_at: string;
+  applicant_id: string;
   profiles: {
     full_name: string;
     email: string;
@@ -254,7 +255,7 @@ const JobDetailPage = () => {
         await supabase
           .from('notifications')
           .insert({
-            user_id: application.profiles.email, // This should be user_id, but we need to get it from profiles
+            user_id: application.applicant_id,
             type: 'job_application_status_updated',
             message: `Your application for "${job?.title}" has been ${newStatus}`,
             read: false
@@ -265,6 +266,25 @@ const JobDetailPage = () => {
     } catch (err) {
       console.error('Error updating application status:', err);
       alert('Failed to update application status');
+    }
+  };
+
+  const downloadResume = async (resumeUrl: string, applicantName: string) => {
+    try {
+      const response = await fetch(resumeUrl);
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = `${applicantName}_resume.pdf`;
+      document.body.appendChild(a);
+      a.click();
+      window.URL.revokeObjectURL(url);
+      document.body.removeChild(a);
+    } catch (err) {
+      console.error('Error downloading resume:', err);
+      alert('Failed to download resume');
     }
   };
 
@@ -616,15 +636,13 @@ const JobDetailPage = () => {
                         <div className="flex items-center justify-between">
                           <div className="flex items-center gap-2">
                             {application.resume_url && (
-                              <a
-                                href={application.resume_url}
-                                target="_blank"
-                                rel="noopener noreferrer"
+                              <button
+                                onClick={() => downloadResume(application.resume_url, application.profiles.full_name)}
                                 className="text-dental-600 hover:text-dental-700 text-xs flex items-center gap-1"
                               >
-                                <FileText className="h-3 w-3" />
+                                <Download className="h-3 w-3" />
                                 Resume
-                              </a>
+                              </button>
                             )}
                             <span className="text-xs text-neutral-500">
                               {formatDate(application.applied_at)}
@@ -661,6 +679,28 @@ const JobDetailPage = () => {
                     )}
                   </div>
                 )}
+              </div>
+            )}
+
+            {/* Login Prompt for Non-Authenticated Users */}
+            {!user && (
+              <div className="bg-white rounded-2xl shadow-md p-6">
+                <h3 className="font-semibold text-neutral-900 mb-4">Apply for this position</h3>
+                <p className="text-neutral-600 mb-4">
+                  You need to be logged in to apply for this job.
+                </p>
+                <div className="space-y-2">
+                  <Link to="/login">
+                    <PrimaryButton className="w-full">
+                      Log In to Apply
+                    </PrimaryButton>
+                  </Link>
+                  <Link to="/register">
+                    <SecondaryButton className="w-full">
+                      Create Account
+                    </SecondaryButton>
+                  </Link>
+                </div>
               </div>
             )}
           </div>

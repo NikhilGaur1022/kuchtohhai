@@ -13,6 +13,8 @@ import VerificationApplicationPage from './pages/VerificationApplicationPage';
 import JobsPage from './pages/JobsPage';
 import JobDetailPage from './pages/JobDetailPage';
 import CreateJobPage from './pages/CreateJobPage';
+import JobListingsPage from './pages/dashboard/JobListingsPage';
+import JobApplicationsPage from './pages/dashboard/JobApplicationsPage';
 
 import LoginPage from './pages/auth/LoginPage';
 import RegisterPage from './pages/auth/RegisterPage';
@@ -82,6 +84,8 @@ function App() {
           <Route path="jobs" element={<JobsPage />} />
           <Route path="jobs/:id" element={<JobDetailPage />} />
           <Route path="jobs/create" element={<PrivateRoute><CreateJobPage /></PrivateRoute>} />
+          <Route path="dashboard/job-listings" element={<PrivateRoute><JobListingsPage /></PrivateRoute>} />
+          <Route path="dashboard/job-applications" element={<PrivateRoute><JobApplicationsPage /></PrivateRoute>} />
 
           <Route path="dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
           <Route path="profile" element={<PrivateRoute><ProfilePage /></PrivateRoute>} />
