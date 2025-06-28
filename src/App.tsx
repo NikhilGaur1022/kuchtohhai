@@ -5,7 +5,6 @@ import HomePage from './pages/HomePage';
 import ArticlesPage from './pages/ArticlesPage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
 
-import ThreadDetailPage from './pages/ThreadDetailPage';
 import EventsPage from './pages/EventsPage';
 import EventDetailPage from './pages/EventDetailPage';
 import CreateEventPage from './pages/CreateEventPage';
@@ -78,7 +77,6 @@ function App() {
           <Route path="articles" element={<ArticlesPage />} />
           <Route path="articles/:id" element={<ArticleDetailPage />} />
           
-          <Route path="forum/thread/:id" element={<ThreadDetailPage />} />
           <Route path="events" element={<EventsPage />} />
           <Route path="events/:id" element={<EventDetailPage />} />
           <Route path="events/create" element={<PrivateRoute><CreateEventPage /></PrivateRoute>} />
