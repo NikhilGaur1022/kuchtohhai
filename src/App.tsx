@@ -17,7 +17,7 @@ import NotFoundPage from './pages/NotFoundPage';
 import ScrollToTop from './components/common/ScrollToTop';
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute from './components/common/AdminRoute';
-import NotificationsPage from './pages/NotificationsPage';
+
 import EditArticlePage from './pages/EditArticlePage';
 import MyArticlesPage from './pages/MyArticlesPage';
 import ProfessorsPage from './pages/ProfessorsPage';
