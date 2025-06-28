@@ -61,7 +61,10 @@ const JobDetailPage = () => {
   const [isOwner, setIsOwner] = useState(false);
 
   useEffect(() => {
+    console.log('JobDetailPage mounted with ID:', id);
+    
     if (!id) {
+      console.log('No ID provided, redirecting to jobs');
       navigate('/jobs');
       return;
     }
@@ -69,6 +72,9 @@ const JobDetailPage = () => {
     const fetchJobAndApplications = async () => {
       try {
         setIsLoading(true);
+        setError(null);
+        
+        console.log('Fetching job with ID:', id);
         
         // Fetch job with poster profile
         const { data: jobData, error: jobError } = await supabase
@@ -83,32 +89,44 @@ const JobDetailPage = () => {
           .eq('id', id)
           .single();
 
+        console.log('Job fetch result:', { jobData, jobError });
+
         if (jobError) {
+          console.error('Job fetch error:', jobError);
           if (jobError.code === 'PGRST116') {
             setError('Job not found');
           } else {
-            throw jobError;
+            setError('Failed to load job details');
           }
           return;
         }
 
+        if (!jobData) {
+          setError('Job not found');
+          return;
+        }
+
+        console.log('Setting job data:', jobData);
         setJob(jobData);
         setIsOwner(user?.id === jobData.posted_by);
 
         // Check if user has already applied
         if (user) {
-          const { data: applicationData } = await supabase
+          console.log('Checking if user has applied');
+          const { data: applicationData, error: appError } = await supabase
             .from('job_applications')
             .select('id')
             .eq('job_id', id)
             .eq('applicant_id', user.id)
             .single();
 
+          console.log('Application check result:', { applicationData, appError });
           setHasApplied(!!applicationData);
         }
 
         // If user is the job poster, fetch all applications
         if (user?.id === jobData.posted_by) {
+          console.log('User is job owner, fetching applications');
           const { data: applicationsData, error: applicationsError } = await supabase
             .from('job_applications')
             .select(`
@@ -124,6 +142,8 @@ const JobDetailPage = () => {
             .eq('job_id', id)
             .order('applied_at', { ascending: false });
 
+          console.log('Applications fetch result:', { applicationsData, applicationsError });
+
           if (applicationsError) {
             console.error('Error fetching applications:', applicationsError);
           } else {
@@ -132,7 +152,7 @@ const JobDetailPage = () => {
         }
 
       } catch (err) {
-        console.error('Error fetching job:', err);
+        console.error('Error in fetchJobAndApplications:', err);
         setError('Failed to load job. Please try again later.');
       } finally {
         setIsLoading(false);
@@ -327,6 +347,8 @@ const JobDetailPage = () => {
     }
   };
 
+  console.log('Render state:', { isLoading, error, job, id });
+
   if (isLoading) {
     return (
       <div className="pt-20 pb-16 min-h-screen bg-neutral-50">
@@ -334,7 +356,7 @@ const JobDetailPage = () => {
           <div className="flex items-center justify-center min-h-[400px]">
             <div className="text-center">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-dental-600 mx-auto mb-4"></div>
-              <p className="text-neutral-600">Loading job...</p>
+              <p className="text-neutral-600">Loading job details...</p>
             </div>
           </div>
         </div>
