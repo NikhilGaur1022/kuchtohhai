@@ -4,7 +4,7 @@ import Layout from './components/layout/Layout';
 import HomePage from './pages/HomePage';
 import ArticlesPage from './pages/ArticlesPage';
 import ArticleDetailPage from './pages/ArticleDetailPage';
-import ForumPage from './pages/ForumPage';
+
 import ThreadDetailPage from './pages/ThreadDetailPage';
 import EventsPage from './pages/EventsPage';
 import EventDetailPage from './pages/EventDetailPage';
@@ -77,8 +77,7 @@ function App() {
           <Route index element={<HomePage />} />
           <Route path="articles" element={<ArticlesPage />} />
           <Route path="articles/:id" element={<ArticleDetailPage />} />
-          <Route path="journals" element={<JournalsPage />} />
-          <Route path="forum" element={<ForumPage />} />
+          
           <Route path="forum/thread/:id" element={<ThreadDetailPage />} />
           <Route path="events" element={<EventsPage />} />
           <Route path="events/:id" element={<EventDetailPage />} />
