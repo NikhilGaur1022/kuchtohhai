@@ -26,9 +26,7 @@ import AdminRoute from './components/common/AdminRoute';
 
 
 
-import ProfessorsPage from './pages/ProfessorsPage';
-import ProfessorDetailPage from './pages/ProfessorDetailPage';
-import ProfessorArticlesPage from './pages/ProfessorArticlesPage';
+
 
 function App() {
   useEffect(() => {
@@ -82,10 +80,6 @@ function App() {
           <Route path="events/create" element={<PrivateRoute><CreateEventPage /></PrivateRoute>} />
           <Route path="verification/apply" element={<PrivateRoute><VerificationApplicationPage /></PrivateRoute>} />
 
-
-          <Route path="professors" element={<ProfessorsPage />} />
-          <Route path="professors/:id/articles" element={<ProfessorArticlesPage />} />
-          <Route path="professors/:id" element={<ProfessorDetailPage />} />
 
 
           <Route path="dashboard" element={<PrivateRoute><DashboardPage /></PrivateRoute>} />
