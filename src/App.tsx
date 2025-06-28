@@ -23,7 +23,7 @@ import ScrollToTop from './components/common/ScrollToTop';
 
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute from './components/common/AdminRoute';
-import NotificationsPage from './pages/NotificationsPage';
+
 import EditArticlePage from './pages/EditArticlePage';
 import MyArticlesPage from './pages/MyArticlesPage';
 import ProfessorsPage from './pages/ProfessorsPage';
@@ -96,7 +96,7 @@ function App() {
           </Route>
           <Route path="login" element={<LoginPage />} />
           <Route path="register" element={<RegisterPage />} />
-          <Route path="notifications" element={<PrivateRoute><NotificationsPage /></PrivateRoute>} />
+         
           <Route path="edit-article/:id" element={<PrivateRoute><EditArticlePage /></PrivateRoute>} />
           <Route path="my-articles" element={<PrivateRoute><MyArticlesPage /></PrivateRoute>} />
           <Route path="*" element={<NotFoundPage />} />
