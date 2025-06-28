@@ -18,7 +18,6 @@ import ScrollToTop from './components/common/ScrollToTop';
 import PrivateRoute from './components/common/PrivateRoute';
 import AdminRoute from './components/common/AdminRoute';
 
-import ProfessorArticlesPage from './pages/ProfessorArticlesPage';
 
 function App() {
   useEffect(() => {
