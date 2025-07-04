@@ -20,11 +20,11 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   const getVariantClasses = () => {
     switch (variant) {
       case 'gradient':
-        return 'bg-gradient-to-r from-dental-600 to-dental-700 hover:from-dental-700 hover:to-dental-800 shadow-lg hover:shadow-xl';
+        return 'bg-gradient-to-r from-dental-600 via-dental-700 to-dental-800 hover:from-dental-700 hover:via-dental-800 hover:to-dental-900 shadow-lg hover:shadow-2xl hover:shadow-dental-500/25';
       case 'glow':
-        return 'bg-dental-600 hover:bg-dental-700 shadow-glow hover:shadow-glow-lg';
+        return 'bg-dental-600 hover:bg-dental-700 shadow-glow hover:shadow-glow-lg animate-pulse-glow';
       default:
-        return 'bg-dental-600 hover:bg-dental-700 shadow-lg hover:shadow-xl';
+        return 'bg-dental-600 hover:bg-dental-700 shadow-lg hover:shadow-2xl hover:shadow-dental-500/20';
     }
   };
 
@@ -34,14 +34,16 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
       onClick={onClick}
       disabled={disabled}
       className={`
-        text-white px-6 py-3 rounded-xl font-medium
-        transition-all duration-300 transform hover:scale-105
+        relative overflow-hidden text-white px-6 py-3 rounded-xl font-medium
+        transition-all duration-300 transform hover:scale-105 hover:-translate-y-1
         disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none
+        before:absolute before:inset-0 before:bg-gradient-to-r before:from-white/0 before:via-white/20 before:to-white/0
+        before:translate-x-[-100%] hover:before:translate-x-[100%] before:transition-transform before:duration-700
         ${getVariantClasses()}
         ${className}
       `}
     >
-      {children}
+      <span className="relative z-10">{children}</span>
     </button>
   );
 };

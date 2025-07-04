@@ -2,6 +2,8 @@ import { motion } from 'framer-motion';
 import { ChevronRight, BookOpen, Globe, Award, Calendar, Link, Users, ShoppingBag, Building2, Sparkles, ArrowRight, Star, TrendingUp } from 'lucide-react';
 import { Link as RouterLink } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import CountUpCard from '../components/common/CountUpCard';
+import FAQSection from '../components/common/FAQSection';
 
 const HomePage = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
@@ -169,9 +171,10 @@ const HomePage = () => {
               >
                 <RouterLink 
                   to="/register" 
-                  className="group relative px-8 py-4 bg-gradient-to-r from-dental-600 to-dental-700 text-white font-semibold rounded-2xl overflow-hidden transition-all duration-300 hover:shadow-2xl hover:shadow-dental-500/25 transform hover:scale-105"
+                  className="group relative px-8 py-4 bg-gradient-to-r from-dental-600 via-dental-700 to-dental-800 text-white font-semibold rounded-2xl overflow-hidden transition-all duration-500 hover:shadow-2xl hover:shadow-dental-500/25 transform hover:scale-105 hover:-translate-y-1"
                 >
-                  <div className="absolute inset-0 bg-gradient-to-r from-dental-700 to-dental-800 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-dental-700 via-dental-800 to-dental-900 opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
                   <span className="relative flex items-center">
                     Join DentalReach
                     <ArrowRight className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform duration-300" />
@@ -180,7 +183,7 @@ const HomePage = () => {
                 
                 <RouterLink 
                   to="/articles" 
-                  className="group flex items-center text-dental-700 font-medium px-6 py-4 rounded-2xl hover:bg-white/50 backdrop-blur-sm transition-all duration-300"
+                  className="group flex items-center text-dental-700 font-medium px-6 py-4 rounded-2xl hover:bg-white/50 backdrop-blur-sm transition-all duration-300 border border-transparent hover:border-dental-200/50"
                 >
                   Explore Articles
                   <ChevronRight className="h-5 w-5 ml-1 transition-transform group-hover:translate-x-1 duration-300" />
@@ -233,7 +236,7 @@ const HomePage = () => {
             </motion.div>
           </div>
           
-          {/* Enhanced Stats */}
+          {/* Enhanced Stats with Count-up Animation */}
           <motion.div 
             variants={containerVariants}
             initial="hidden"
@@ -241,27 +244,34 @@ const HomePage = () => {
             viewport={{ once: true, margin: "-100px" }}
             className="grid grid-cols-2 md:grid-cols-4 gap-6 mt-20"
           >
-            {[
-              { label: 'Dental Professionals', value: '75,000+', icon: Users, color: 'from-blue-500 to-dental-600' },
-              { label: 'Published Articles', value: '12,500+', icon: BookOpen, color: 'from-green-500 to-emerald-600' },
-              { label: 'Countries Reached', value: '140+', icon: Globe, color: 'from-purple-500 to-violet-600' },
-              { label: 'Years of Excellence', value: '7+', icon: TrendingUp, color: 'from-orange-500 to-red-600' }
-            ].map((stat, i) => (
-              <motion.div 
-                key={i} 
-                variants={itemVariants} 
-                className="group relative bg-white/80 backdrop-blur-sm rounded-2xl p-6 shadow-lg border border-white/20 hover:shadow-2xl transition-all duration-500 hover:-translate-y-2"
-              >
-                <div className="absolute inset-0 bg-gradient-to-br from-white/50 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-300" />
-                <div className="relative">
-                  <div className={`w-12 h-12 bg-gradient-to-br ${stat.color} rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-300`}>
-                    <stat.icon className="h-6 w-6 text-white" />
-                  </div>
-                  <p className="text-3xl font-bold bg-gradient-to-r from-neutral-800 to-neutral-600 bg-clip-text text-transparent mb-2">{stat.value}</p>
-                  <p className="text-neutral-600 text-sm">{stat.label}</p>
-                </div>
-              </motion.div>
-            ))}
+            <CountUpCard
+              icon={Users}
+              label="Dental Professionals"
+              value="75,000+"
+              color="from-blue-500 to-dental-600"
+              delay={0}
+            />
+            <CountUpCard
+              icon={BookOpen}
+              label="Published Articles"
+              value="12,500+"
+              color="from-green-500 to-emerald-600"
+              delay={200}
+            />
+            <CountUpCard
+              icon={Globe}
+              label="Countries Reached"
+              value="140+"
+              color="from-purple-500 to-violet-600"
+              delay={400}
+            />
+            <CountUpCard
+              icon={TrendingUp}
+              label="Years of Excellence"
+              value="7+"
+              color="from-orange-500 to-red-600"
+              delay={600}
+            />
           </motion.div>
         </div>
       </section>
@@ -398,21 +408,61 @@ const HomePage = () => {
         </div>
       </section>
       
-      {/* Enhanced Vision Section */}
-      <section className="py-16 md:py-24 bg-gradient-to-br from-neutral-50 to-dental-50/30 relative overflow-hidden">
-        {/* Animated Background Elements */}
-        <motion.div 
-          className="absolute top-10 right-10 w-32 h-32 bg-gradient-to-br from-dental-200/20 to-dental-300/10 rounded-full blur-2xl"
-          animate={{
-            scale: [1, 1.2, 1],
-            opacity: [0.3, 0.6, 0.3],
-          }}
-          transition={{
-            duration: 4,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-        />
+      {/* Enhanced Vision Section with More Effects */}
+      <section className="py-16 md:py-24 bg-gradient-to-br from-neutral-50 via-dental-50/30 to-blue-50/20 relative overflow-hidden">
+        {/* Enhanced Animated Background Elements */}
+        <div className="absolute inset-0">
+          <motion.div 
+            className="absolute top-10 right-10 w-32 h-32 bg-gradient-to-br from-dental-200/30 to-dental-300/20 rounded-full blur-2xl"
+            animate={{
+              scale: [1, 1.3, 1],
+              opacity: [0.3, 0.7, 0.3],
+              x: [0, 20, 0],
+              y: [0, -15, 0],
+            }}
+            transition={{
+              duration: 6,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          <motion.div 
+            className="absolute bottom-20 left-10 w-24 h-24 bg-gradient-to-br from-blue-200/30 to-dental-200/20 rounded-full blur-2xl"
+            animate={{
+              scale: [1, 0.8, 1],
+              opacity: [0.4, 0.8, 0.4],
+              x: [0, -15, 0],
+              y: [0, 10, 0],
+            }}
+            transition={{
+              duration: 8,
+              repeat: Infinity,
+              ease: "easeInOut"
+            }}
+          />
+          
+          {/* Floating Particles */}
+          {[...Array(5)].map((_, i) => (
+            <motion.div
+              key={i}
+              className="absolute w-2 h-2 bg-dental-400/30 rounded-full"
+              style={{
+                left: `${20 + i * 15}%`,
+                top: `${30 + i * 10}%`,
+              }}
+              animate={{
+                y: [-20, 20, -20],
+                opacity: [0, 1, 0],
+              }}
+              transition={{
+                duration: 4 + i,
+                repeat: Infinity,
+                delay: i * 0.5,
+                ease: "easeInOut"
+              }}
+            />
+          ))}
+        </div>
 
         <div className="container-custom relative">
           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12 items-center">
@@ -424,33 +474,66 @@ const HomePage = () => {
               className="relative"
             >
               <div className="relative">
-                <div className="aspect-square rounded-3xl overflow-hidden shadow-2xl">
+                {/* Enhanced Image Container with Blur Effects */}
+                <div className="relative aspect-square rounded-3xl overflow-hidden shadow-2xl">
+                  <div className="absolute inset-0 bg-gradient-to-br from-dental-500/10 to-blue-500/10 backdrop-blur-[1px] z-10" />
                   <img 
                     src="https://images.pexels.com/photos/3760514/pexels-photo-3760514.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2" 
                     alt="Dr. Rockson Samuel" 
                     className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-700"
                   />
+                  
+                  {/* Overlay Blur Effect */}
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/20 via-transparent to-transparent opacity-0 hover:opacity-100 transition-opacity duration-500" />
                 </div>
                 
-                {/* Floating Achievement Card */}
+                {/* Enhanced Floating Achievement Card */}
                 <motion.div 
-                  className="absolute -right-8 -bottom-8 bg-white/95 backdrop-blur-sm rounded-2xl p-6 shadow-2xl max-w-xs border border-white/20"
+                  className="absolute -right-8 -bottom-8 bg-white/95 backdrop-blur-xl rounded-2xl p-6 shadow-2xl max-w-xs border border-white/30"
                   initial={{ opacity: 0, scale: 0.8, y: 20 }}
                   whileInView={{ opacity: 1, scale: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.6, delay: 0.3 }}
-                  whileHover={{ scale: 1.05 }}
+                  whileHover={{ 
+                    scale: 1.05,
+                    boxShadow: "0 25px 50px rgba(0,0,0,0.15)"
+                  }}
                 >
                   <div className="flex items-center space-x-3 mb-3">
-                    <div className="h-12 w-12 bg-gradient-to-br from-dental-100 to-dental-200 rounded-xl flex items-center justify-center">
+                    <motion.div 
+                      className="h-12 w-12 bg-gradient-to-br from-dental-100 to-dental-200 rounded-xl flex items-center justify-center"
+                      whileHover={{ rotate: 360 }}
+                      transition={{ duration: 0.5 }}
+                    >
                       <Award className="h-6 w-6 text-dental-700" />
-                    </div>
+                    </motion.div>
                     <div>
                       <p className="font-semibold text-neutral-900">Digital Innovation Award</p>
                       <p className="text-xs text-neutral-500">2024</p>
                     </div>
                   </div>
                   <p className="text-neutral-600 text-sm">Recognized for transforming dental education through digital platforms.</p>
+                  
+                  {/* Floating Sparkles */}
+                  {[...Array(3)].map((_, i) => (
+                    <motion.div
+                      key={i}
+                      className="absolute w-1 h-1 bg-dental-400 rounded-full"
+                      style={{
+                        top: `${20 + i * 20}%`,
+                        right: `${10 + i * 15}%`,
+                      }}
+                      animate={{
+                        scale: [0, 1, 0],
+                        opacity: [0, 1, 0],
+                      }}
+                      transition={{
+                        duration: 2,
+                        repeat: Infinity,
+                        delay: i * 0.5,
+                      }}
+                    />
+                  ))}
                 </motion.div>
               </div>
             </motion.div>
@@ -490,15 +573,30 @@ const HomePage = () => {
                 viewport={{ once: true }}
                 transition={{ duration: 0.6, delay: 0.2 }}
               >
-                <p className="leading-relaxed">
+                <motion.p 
+                  className="leading-relaxed"
+                  whileInView={{ opacity: 1 }}
+                  initial={{ opacity: 0.7 }}
+                  transition={{ duration: 0.5 }}
+                >
                   "DentalReach was founded with a vision to create a global community where dental professionals can connect, learn, and grow together. In today's rapidly evolving landscape, we believe that collaboration and knowledge sharing are essential for advancing dental care worldwide."
-                </p>
-                <p className="leading-relaxed">
+                </motion.p>
+                <motion.p 
+                  className="leading-relaxed"
+                  whileInView={{ opacity: 1 }}
+                  initial={{ opacity: 0.7 }}
+                  transition={{ duration: 0.5, delay: 0.1 }}
+                >
                   "Our platform is designed to break down geographical barriers, bridge knowledge gaps, and create opportunities for dental professionals at every stage of their career. From students to seasoned practitioners, from academicians to industry leaders—DentalReach is built for everyone who is passionate about dentistry."
-                </p>
-                <p className="leading-relaxed">
+                </motion.p>
+                <motion.p 
+                  className="leading-relaxed"
+                  whileInView={{ opacity: 1 }}
+                  initial={{ opacity: 0.7 }}
+                  transition={{ duration: 0.5, delay: 0.2 }}
+                >
                   "Together, we are building a future where quality dental education is accessible to all, where innovation is celebrated, and where every dental professional has the resources they need to excel in their practice and make a meaningful impact on patient care."
-                </p>
+                </motion.p>
               </motion.div>
               
               <motion.div 
@@ -509,12 +607,18 @@ const HomePage = () => {
                 transition={{ duration: 0.6, delay: 0.4 }}
               >
                 <div className="relative">
-                  <img 
+                  <motion.img 
                     src="https://images.pexels.com/photos/5327585/pexels-photo-5327585.jpeg?auto=compress&cs=tinysrgb&h=120" 
                     alt="Dr. Rockson Samuel" 
                     className="w-16 h-16 rounded-full object-cover border-4 border-white shadow-lg" 
+                    whileHover={{ scale: 1.1 }}
+                    transition={{ duration: 0.3 }}
                   />
-                  <div className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"></div>
+                  <motion.div 
+                    className="absolute -bottom-1 -right-1 w-6 h-6 bg-green-500 rounded-full border-2 border-white"
+                    animate={{ scale: [1, 1.2, 1] }}
+                    transition={{ duration: 2, repeat: Infinity }}
+                  />
                 </div>
                 <div className="ml-4">
                   <p className="font-semibold text-neutral-900">Dr. Rockson Samuel</p>
@@ -525,6 +629,9 @@ const HomePage = () => {
           </div>
         </div>
       </section>
+
+      {/* FAQ Section */}
+      <FAQSection />
       
       {/* Enhanced CTA Section */}
       <section className="py-16 md:py-20 bg-gradient-to-br from-dental-700 via-dental-600 to-dental-800 text-white relative overflow-hidden">
@@ -570,9 +677,10 @@ const HomePage = () => {
             >
               <RouterLink 
                 to="/register" 
-                className="group px-8 py-4 bg-white text-dental-700 font-semibold rounded-2xl hover:bg-dental-50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
+                className="group relative overflow-hidden px-8 py-4 bg-white text-dental-700 font-semibold rounded-2xl hover:bg-dental-50 transition-all duration-300 transform hover:scale-105 hover:shadow-2xl"
               >
-                <span className="flex items-center">
+                <div className="absolute inset-0 bg-gradient-to-r from-dental-50/0 via-dental-50/50 to-dental-50/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <span className="relative flex items-center">
                   Join Now
                   <ArrowRight className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform duration-300" />
                 </span>
@@ -580,9 +688,10 @@ const HomePage = () => {
               
               <RouterLink 
                 to="/articles" 
-                className="group px-8 py-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 font-semibold rounded-2xl hover:bg-white/20 transition-all duration-300 transform hover:scale-105"
+                className="group relative overflow-hidden px-8 py-4 bg-white/10 backdrop-blur-sm text-white border border-white/20 font-semibold rounded-2xl hover:bg-white/20 transition-all duration-300 transform hover:scale-105"
               >
-                <span className="flex items-center">
+                <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/10 to-white/0 translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-700" />
+                <span className="relative flex items-center">
                   Explore Content
                   <ChevronRight className="ml-2 h-5 w-5 transform group-hover:translate-x-1 transition-transform duration-300" />
                 </span>

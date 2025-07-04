@@ -61,35 +61,88 @@ const RegisterPage = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-neutral-50 pt-16 pb-16 px-4 py-8">
-      <div className="container-custom max-w-6xl mx-auto">
-        <div className="bg-white rounded-2xl shadow-md overflow-hidden">
+    <div className="min-h-screen flex items-center justify-center bg-gradient-to-br from-neutral-50 via-dental-50/30 to-blue-50/20 pt-16 pb-16 px-4 py-8 relative overflow-hidden">
+      {/* Background Effects */}
+      <div className="absolute inset-0">
+        <motion.div 
+          className="absolute top-20 left-20 w-64 h-64 bg-gradient-to-br from-dental-200/20 to-dental-300/10 rounded-full blur-3xl"
+          animate={{
+            x: [0, -30, 0],
+            y: [0, 20, 0],
+            scale: [1, 1.2, 1],
+          }}
+          transition={{
+            duration: 9,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+        <motion.div 
+          className="absolute bottom-20 right-20 w-48 h-48 bg-gradient-to-br from-blue-200/20 to-dental-200/10 rounded-full blur-3xl"
+          animate={{
+            x: [0, 20, 0],
+            y: [0, -15, 0],
+            scale: [1, 0.8, 1],
+          }}
+          transition={{
+            duration: 11,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+        />
+      </div>
+
+      <div className="container-custom max-w-6xl mx-auto relative z-10">
+        <motion.div 
+          className="bg-white/80 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/20"
+          initial={{ opacity: 0, scale: 0.9 }}
+          animate={{ opacity: 1, scale: 1 }}
+          transition={{ duration: 0.6 }}
+        >
           <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
             {/* Form Section */}
             <div className="p-8 md:p-12">
-              <div className="mb-8 text-center md:text-left">
-                <Link to="/" className="inline-flex items-center mb-8">
-                  <div className="w-10 h-10 bg-dental-600 rounded-lg flex items-center justify-center">
+              <motion.div 
+                className="mb-8 text-center md:text-left"
+                initial={{ opacity: 0, y: 20 }}
+                animate={{ opacity: 1, y: 0 }}
+                transition={{ duration: 0.6, delay: 0.1 }}
+              >
+                <Link to="/" className="inline-flex items-center mb-8 group">
+                  <motion.div 
+                    className="w-10 h-10 bg-gradient-to-br from-dental-600 to-dental-700 rounded-xl flex items-center justify-center group-hover:scale-110 transition-transform duration-300"
+                    whileHover={{ rotate: 360 }}
+                    transition={{ duration: 0.5 }}
+                  >
                     <span className="text-white font-bold">DR</span>
-                  </div>
-                  <span className="ml-2 font-semibold text-xl text-dental-700">DentalReach</span>
+                  </motion.div>
+                  <span className="ml-2 font-semibold text-xl bg-gradient-to-r from-dental-700 to-dental-600 bg-clip-text text-transparent">DentalReach</span>
                 </Link>
                 <h1 className="text-2xl md:text-3xl font-bold text-neutral-900 mb-2">Create your account</h1>
                 <p className="text-neutral-600">
                   Already have an account?{' '}
-                  <Link to="/login" className="text-dental-600 hover:text-dental-700">Log in</Link>
+                  <Link to="/login" className="text-dental-600 hover:text-dental-700 font-medium transition-colors duration-200">Log in</Link>
                 </p>
-              </div>
+              </motion.div>
               
               <form onSubmit={handleSubmit} className="space-y-6">
                 {errorMessage && (
-                  <div className="bg-error-50 text-error-600 p-4 rounded-lg text-sm">
+                  <motion.div 
+                    className="bg-red-50 text-red-600 p-4 rounded-xl text-sm border border-red-200"
+                    initial={{ opacity: 0, scale: 0.95 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    transition={{ duration: 0.3 }}
+                  >
                     {errorMessage}
-                  </div>
+                  </motion.div>
                 )}
                 
-                <div>
-                  <label htmlFor="fullName" className="block text-sm font-medium text-neutral-700 mb-1">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.2 }}
+                >
+                  <label htmlFor="fullName" className="block text-sm font-medium text-neutral-700 mb-2">
                     Full Name
                   </label>
                   <div className="relative">
@@ -98,16 +151,20 @@ const RegisterPage = () => {
                       type="text"
                       value={fullName}
                       onChange={(e) => setFullName(e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-dental-500"
+                      className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-dental-500 focus:border-dental-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                       placeholder="Dr. John Smith"
                       required
                     />
                     <User className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 h-5 w-5" />
                   </div>
-                </div>
+                </motion.div>
                 
-                <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-1">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.3 }}
+                >
+                  <label htmlFor="email" className="block text-sm font-medium text-neutral-700 mb-2">
                     Email Address
                   </label>
                   <div className="relative">
@@ -116,16 +173,20 @@ const RegisterPage = () => {
                       type="email"
                       value={email}
                       onChange={(e) => setEmail(e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-dental-500"
+                      className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-dental-500 focus:border-dental-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                       placeholder="you@example.com"
                       required
                     />
                     <Mail className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 h-5 w-5" />
                   </div>
-                </div>
+                </motion.div>
                 
-                <div>
-                  <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-1">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.4 }}
+                >
+                  <label htmlFor="password" className="block text-sm font-medium text-neutral-700 mb-2">
                     Password
                   </label>
                   <div className="relative">
@@ -134,14 +195,14 @@ const RegisterPage = () => {
                       type={showPassword ? "text" : "password"}
                       value={password}
                       onChange={(e) => setPassword(e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-dental-500"
+                      className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-dental-500 focus:border-dental-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                       placeholder="••••••••"
                       required
                     />
                     <button
                       type="button"
                       onClick={() => setShowPassword(!showPassword)}
-                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600"
+                      className="absolute right-3 top-1/2 transform -translate-y-1/2 text-neutral-400 hover:text-neutral-600 transition-colors duration-200"
                     >
                       {showPassword ? (
                         <EyeOff className="h-5 w-5" />
@@ -151,10 +212,14 @@ const RegisterPage = () => {
                     </button>
                   </div>
                   <p className="text-xs text-neutral-500 mt-1">Must be at least 8 characters long</p>
-                </div>
+                </motion.div>
 
-                <div>
-                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-1">
+                <motion.div
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.5 }}
+                >
+                  <label htmlFor="confirmPassword" className="block text-sm font-medium text-neutral-700 mb-2">
                     Confirm Password
                   </label>
                   <div className="relative">
@@ -163,30 +228,43 @@ const RegisterPage = () => {
                       type={showPassword ? "text" : "password"}
                       value={confirmPassword}
                       onChange={(e) => setConfirmPassword(e.target.value)}
-                      className="w-full px-4 py-2 rounded-lg border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-dental-500"
+                      className="w-full px-4 py-3 rounded-xl border border-neutral-200 focus:outline-none focus:ring-2 focus:ring-dental-500 focus:border-dental-500 transition-all duration-200 bg-white/50 backdrop-blur-sm"
                       placeholder="••••••••"
                       required
                     />
                   </div>
-                </div>
+                </motion.div>
 
-                <button
+                {/* Enhanced Register Button */}
+                <motion.button
                   type="submit"
                   disabled={isSubmitting}
-                  className="w-full bg-dental-600 text-white py-2 rounded-lg hover:bg-dental-700 font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                  className="relative overflow-hidden w-full py-3 px-4 bg-gradient-to-r from-dental-600 via-dental-700 to-dental-800 hover:from-dental-700 hover:via-dental-800 hover:to-dental-900 text-white font-semibold rounded-xl focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-dental-500 transition-all duration-300 transform hover:scale-[1.02] hover:-translate-y-0.5 disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none shadow-lg hover:shadow-xl"
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ duration: 0.6, delay: 0.6 }}
+                  whileTap={{ scale: 0.98 }}
                 >
-                  {isSubmitting ? 'Creating Account...' : 'Create Account'}
-                </button>
+                  <div className="absolute inset-0 bg-gradient-to-r from-white/0 via-white/20 to-white/0 translate-x-[-100%] hover:translate-x-[100%] transition-transform duration-700" />
+                  <span className="relative">
+                    {isSubmitting ? 'Creating Account...' : 'Create Account'}
+                  </span>
+                </motion.button>
 
-                <div className="text-center text-xs text-neutral-500">
+                <motion.div 
+                  className="text-center text-xs text-neutral-500"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  transition={{ duration: 0.6, delay: 0.7 }}
+                >
                   By creating an account, you agree to our{' '}
-                  <a href="#" className="text-dental-600 hover:text-dental-700">Terms of Service</a> and{' '}
-                  <a href="#" className="text-dental-600 hover:text-dental-700">Privacy Policy</a>
-                </div>
+                  <a href="#" className="text-dental-600 hover:text-dental-700 transition-colors duration-200">Terms of Service</a> and{' '}
+                  <a href="#" className="text-dental-600 hover:text-dental-700 transition-colors duration-200">Privacy Policy</a>
+                </motion.div>
               </form>
             </div>
 
-            {/* Image Section */}
+            {/* Enhanced Image Section */}
             <div className="hidden md:block relative overflow-hidden bg-gradient-to-br from-dental-50 to-dental-100">
               <div className="absolute inset-0 flex items-center justify-center p-12">
                 <div className="text-center">
@@ -210,33 +288,47 @@ const RegisterPage = () => {
                     transition={{ duration: 0.8, delay: 0.2 }}
                     className="grid grid-cols-2 gap-4 text-sm"
                   >
-                    <div className="bg-white/50 rounded-lg p-4">
-                      <div className="text-2xl font-bold text-dental-700">10k+</div>
-                      <div className="text-dental-600">Professionals</div>
-                    </div>
-                    <div className="bg-white/50 rounded-lg p-4">
-                      <div className="text-2xl font-bold text-dental-700">500+</div>
-                      <div className="text-dental-600">Articles</div>
-                    </div>
-                    <div className="bg-white/50 rounded-lg p-4">
-                      <div className="text-2xl font-bold text-dental-700">50+</div>
-                      <div className="text-dental-600">Events</div>
-                    </div>
-                    <div className="bg-white/50 rounded-lg p-4">
-                      <div className="text-2xl font-bold text-dental-700">24/7</div>
-                      <div className="text-dental-600">Support</div>
-                    </div>
+                    {[
+                      { value: '10k+', label: 'Professionals' },
+                      { value: '500+', label: 'Articles' },
+                      { value: '50+', label: 'Events' },
+                      { value: '24/7', label: 'Support' }
+                    ].map((stat, i) => (
+                      <motion.div 
+                        key={i}
+                        className="bg-white/50 backdrop-blur-sm rounded-xl p-4 hover:bg-white/70 transition-all duration-300"
+                        whileHover={{ scale: 1.05, y: -2 }}
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.5, delay: 0.3 + i * 0.1 }}
+                      >
+                        <div className="text-2xl font-bold text-dental-700">{stat.value}</div>
+                        <div className="text-dental-600">{stat.label}</div>
+                      </motion.div>
+                    ))}
                   </motion.div>
                 </div>
               </div>
               
               {/* Decorative elements */}
-              <div className="absolute -top-12 -right-12 w-24 h-24 bg-dental-200 rounded-full opacity-20"></div>
-              <div className="absolute top-20 -left-8 w-16 h-16 bg-dental-300 rounded-full opacity-30"></div>
-              <div className="absolute -bottom-8 left-12 w-20 h-20 bg-dental-400 rounded-full opacity-20"></div>
+              <motion.div 
+                className="absolute -top-12 -right-12 w-24 h-24 bg-dental-200 rounded-full opacity-20"
+                animate={{ rotate: 360 }}
+                transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
+              />
+              <motion.div 
+                className="absolute top-20 -left-8 w-16 h-16 bg-dental-300 rounded-full opacity-30"
+                animate={{ y: [0, -10, 0] }}
+                transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
+              />
+              <motion.div 
+                className="absolute -bottom-8 left-12 w-20 h-20 bg-dental-400 rounded-full opacity-20"
+                animate={{ x: [0, 10, 0] }}
+                transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
+              />
             </div>
           </div>
-        </div>
+        </motion.div>
       </div>
     </div>
   );
