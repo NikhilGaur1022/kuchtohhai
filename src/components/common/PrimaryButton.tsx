@@ -6,6 +6,7 @@ interface PrimaryButtonProps {
   type?: 'button' | 'submit' | 'reset';
   className?: string;
   disabled?: boolean;
+  variant?: 'default' | 'gradient' | 'glow';
 }
 
 const PrimaryButton: React.FC<PrimaryButtonProps> = ({ 
@@ -13,16 +14,36 @@ const PrimaryButton: React.FC<PrimaryButtonProps> = ({
   onClick, 
   type = 'button', 
   className = '',
-  disabled = false 
-}) => (
-  <button
-    type={type}
-    onClick={onClick}
-    disabled={disabled}
-    className={`bg-dental-600 text-white hover:bg-dental-700 px-6 py-3 rounded-lg transition-colors duration-200 disabled:opacity-70 disabled:cursor-not-allowed ${className}`}
-  >
-    {children}
-  </button>
-);
+  disabled = false,
+  variant = 'default'
+}) => {
+  const getVariantClasses = () => {
+    switch (variant) {
+      case 'gradient':
+        return 'bg-gradient-to-r from-dental-600 to-dental-700 hover:from-dental-700 hover:to-dental-800 shadow-lg hover:shadow-xl';
+      case 'glow':
+        return 'bg-dental-600 hover:bg-dental-700 shadow-glow hover:shadow-glow-lg';
+      default:
+        return 'bg-dental-600 hover:bg-dental-700 shadow-lg hover:shadow-xl';
+    }
+  };
 
-export default PrimaryButton;;
+  return (
+    <button
+      type={type}
+      onClick={onClick}
+      disabled={disabled}
+      className={`
+        text-white px-6 py-3 rounded-xl font-medium
+        transition-all duration-300 transform hover:scale-105
+        disabled:opacity-70 disabled:cursor-not-allowed disabled:transform-none
+        ${getVariantClasses()}
+        ${className}
+      `}
+    >
+      {children}
+    </button>
+  );
+};
+
+export default PrimaryButton;
